@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
-    <description>Displays list of task from servers. Currently only Redmine tasks is supported</description>
+    <description>Displays complete task list</description>
     <version>0.1</version>
     <vendor>ol-loginov</vendor>
     <idea-version since-build="8000"/>
@@ -8,19 +8,25 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.tasks</depends>
 
+    <resource-bundle>org.github.olloginov.ideataskbrowser.TaskBrowserBundle</resource-bundle>
+
     <application-components>
-        <!-- Add your application components here -->
     </application-components>
 
     <project-components>
-        <!-- Add your project components here -->
+        <component>
+            <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserNotifier</implementation-class>
+        </component>
     </project-components>
 
     <actions>
-        <!-- Add your actions here -->
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png"
+                    factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
+        <projectService serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowser"
+                        serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserWindow"/>
     </extensions>
+
 </idea-plugin>

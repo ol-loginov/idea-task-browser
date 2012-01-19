@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.github.olloginov.ideataskbrowser.TaskBrowserPanel">
+  <grid id="27dc6" binding="root" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="653" height="279"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <splitpane id="81ab6" binding="contentSplitter">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <dividerLocation value="332"/>
+        </properties>
+        <border type="none"/>
+        <children>
+          <grid id="8cb6a" binding="preview" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <splitpane position="right"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children/>
+          </grid>
+          <scrollpane id="3c7cc" binding="treeScroll">
+            <constraints>
+              <splitpane position="left"/>
+            </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="2ee95" class="javax.swing.JTree" binding="tree">
+                <constraints/>
+                <properties>
+                  <rootVisible value="false"/>
+                  <showsRootHandles value="true"/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
+        </children>
+      </splitpane>
+    </children>
+  </grid>
+</form>
