@@ -26,7 +26,7 @@
         <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png"
                     factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
         <projectService serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowser"
-                        serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserWindow"/>
+                        serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserService"/>
     </extensions>
 
 </idea-plugin>

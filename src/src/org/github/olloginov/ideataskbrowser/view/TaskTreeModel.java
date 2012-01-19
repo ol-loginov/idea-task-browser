@@ -1,4 +1,4 @@
-package org.github.olloginov.ideataskbrowser.model;
+package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.tasks.TaskRepository;
 
@@ -13,12 +13,6 @@ public class TaskTreeModel extends DefaultTreeModel {
 
     public RootTreeNode getRoot() {
         return (RootTreeNode) super.getRoot();
-    }
-
-    public void markRepositoryObsoleteAll() {
-        for (int index = getRoot().getChildCount() - 1; index >= 0; --index) {
-            nodeChanged(getRoot().getChildAt(index));
-        }
     }
 
     public void addNode(RepositoryTreeNode node) {

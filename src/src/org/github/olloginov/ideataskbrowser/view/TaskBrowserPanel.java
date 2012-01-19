@@ -1,7 +1,12 @@
-package org.github.olloginov.ideataskbrowser;
+package org.github.olloginov.ideataskbrowser.view;
 
-import org.github.olloginov.ideataskbrowser.model.TaskTreeModel;
-import org.github.olloginov.ideataskbrowser.model.TaskTreeRenderer;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction;
+import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction;
+import org.github.olloginov.ideataskbrowser.actions.RefreshListAction;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -10,6 +15,7 @@ import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 
 public class TaskBrowserPanel {
+    private static final String TOOL_WINDOW_ID = "TaskBrowser";
 
     private JPanel root;
     private JSplitPane contentSplitter;
@@ -23,6 +29,25 @@ public class TaskBrowserPanel {
         tree.setModel(treeModel);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setCellRenderer(new TaskTreeRenderer());
+
+        initToolbarActions();
+    }
+
+    private void initToolbarActions() {
+        final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
+        toolbarGroup.add(new RefreshListAction());
+        toolbarGroup.add(new OpenInContextAction());
+        toolbarGroup.add(new OpenInBrowserAction());
+
+        final ActionManager actionManager = ActionManager.getInstance();
+        final ActionToolbar toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false);
+        root.add(toolbar.getComponent(), BorderLayout.WEST);
+    }
+
+    public SimpleToolWindowPanel wrapInToolWindowPanel() {
+        SimpleToolWindowPanel panel = new SimpleToolWindowPanel(false);
+        panel.add($$$getRootComponent$$$(), BorderLayout.CENTER);
+        return panel;
     }
 
     public TaskTreeModel getModel() {
@@ -35,10 +60,6 @@ public class TaskBrowserPanel {
             return null;
         }
         return (TreeNode) selectionPath.getLastPathComponent();
-    }
-
-    public void setToolbar(JComponent component) {
-        root.add(component, BorderLayout.WEST);
     }
 
     {

@@ -1,4 +1,4 @@
-package org.github.olloginov.ideataskbrowser.model;
+package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.tasks.LocalTask;

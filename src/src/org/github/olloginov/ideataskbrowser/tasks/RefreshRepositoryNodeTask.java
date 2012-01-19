@@ -13,9 +13,9 @@ import com.intellij.util.continuation.Where;
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 import org.github.olloginov.ideataskbrowser.TaskBrowserNotifier;
 import org.github.olloginov.ideataskbrowser.exceptions.RepositoryException;
-import org.github.olloginov.ideataskbrowser.model.RepositoryTreeNode;
-import org.github.olloginov.ideataskbrowser.model.TaskTreeNode;
-import org.github.olloginov.ideataskbrowser.model.TreeNodeRef;
+import org.github.olloginov.ideataskbrowser.view.RepositoryTreeNode;
+import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
+import org.github.olloginov.ideataskbrowser.view.TreeNodeRef;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
