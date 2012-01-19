@@ -5,6 +5,9 @@
     <vendor>ol-loginov</vendor>
     <idea-version since-build="8000"/>
 
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.tasks</depends>
+
     <application-components>
         <!-- Add your application components here -->
     </application-components>
