@@ -1,28 +1,29 @@
 package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskRepository;
+import org.github.olloginov.ideataskbrowser.model.TaskSearch;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Date;
 
-public class RepositoryTreeNode extends DefaultMutableTreeNode implements CustomIcon {
-    public RepositoryTreeNode(TaskRepository repository) {
-        super(repository);
+public class TaskSearchTreeNode extends DefaultMutableTreeNode implements CustomIcon {
+    public TaskSearchTreeNode(TaskSearch search) {
+        super(search);
     }
 
-    public TaskRepository getRepository() {
-        return (TaskRepository) getUserObject();
+    public TaskSearch getSearch() {
+        return (TaskSearch) getUserObject();
     }
 
     @Override
     public String toString() {
-        return String.format("%s", getRepository().getPresentableName());
+        return String.format("%s", getSearch().getRepository());
     }
 
     public int findTaskNode(Task task) {
-        for (int index = 0, end = getChildCount(); index < end; ++index) {
+        int index = 0;
+        for (int end = getChildCount(); index < end; ++index) {
             TaskTreeNode taskNode = getChildAt(index);
             if (task.getId().equals(taskNode.getTask().getId())) {
                 return index;
@@ -34,10 +35,10 @@ public class RepositoryTreeNode extends DefaultMutableTreeNode implements Custom
             }
 
             if (taskCreated.after(taskNode.getTask().getCreated())) {
-                return -(index + 1);
+                break;
             }
         }
-        return -1;
+        return -(index + 1);
     }
 
     @Override
@@ -54,6 +55,6 @@ public class RepositoryTreeNode extends DefaultMutableTreeNode implements Custom
 
     @Override
     public Icon getIcon() {
-        return getRepository().getRepositoryType().getIcon();
+        return getSearch().getIcon();
     }
 }

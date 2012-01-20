@@ -2,8 +2,11 @@ package org.github.olloginov.ideataskbrowser.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.tasks.Task;
+import org.github.olloginov.ideataskbrowser.TaskBrowser;
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 
 import javax.swing.*;
@@ -21,6 +24,10 @@ public abstract class AnActionImpl extends AnAction {
 
     protected boolean isEnabled(Project project) {
         return false;
+    }
+
+    protected Task getSelectedTask(Project project) {
+        return project == null ? null : ServiceManager.getService(project, TaskBrowser.class).getSelectedTask();
     }
 
     private static Icon resolveIcon(String key) {

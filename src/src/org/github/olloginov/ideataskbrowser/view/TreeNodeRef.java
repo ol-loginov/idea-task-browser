@@ -18,4 +18,8 @@ public class TreeNodeRef<T extends MutableTreeNode> {
     public void insertChild(int index, TaskTreeNode child) {
         model.insertNodeInto(child, node, index);
     }
+
+    public void updateChild(TaskTreeNode child) {
+        model.nodeChanged(child);
+    }
 }

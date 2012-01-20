@@ -17,6 +17,11 @@
         <component>
             <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserNotifier</implementation-class>
         </component>
+        <component>
+            <interface-class>org.github.olloginov.ideataskbrowser.TaskBrowser</interface-class>
+            <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserService</implementation-class>
+            <skipForDefaultProject>true</skipForDefaultProject>
+        </component>
     </project-components>
 
     <actions>
@@ -25,8 +30,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png"
                     factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
-        <projectService serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowser"
-                        serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserService"/>
     </extensions>
 
 </idea-plugin>

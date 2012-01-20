@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction;
 import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction;
 import org.github.olloginov.ideataskbrowser.actions.RefreshListAction;
+import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -23,13 +24,13 @@ public class TaskBrowserPanel {
     private JPanel preview;
     private JScrollPane treeScroll;
 
-    private TaskTreeModel treeModel = new TaskTreeModel();
+    private TaskTreeModel treeModel;
 
     public TaskBrowserPanel() {
-        tree.setModel(treeModel);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setCellRenderer(new TaskTreeRenderer());
 
+        setList(new TaskSearchList());
         initToolbarActions();
     }
 
@@ -50,7 +51,11 @@ public class TaskBrowserPanel {
         return panel;
     }
 
-    public TaskTreeModel getModel() {
+    public void setList(TaskSearchList searchList) {
+        tree.setModel(treeModel = new TaskTreeModel(searchList));
+    }
+
+    public TaskTreeModel getTreeModel() {
         return treeModel;
     }
 

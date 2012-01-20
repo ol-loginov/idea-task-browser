@@ -6,23 +6,25 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class TaskTreeNode extends DefaultMutableTreeNode implements CustomIcon {
-    private final Task task;
-
     public TaskTreeNode(Task task) {
-        this.task = task;
+        super(task);
     }
 
     public Task getTask() {
-        return task;
+        return (Task) getUserObject();
     }
 
     @Override
     public Icon getIcon() {
-        return TaskTreeRenderer.getIconByType(task.getType());
+        return TaskTreeRenderer.getIconByType(getTask().getType());
     }
 
     @Override
     public String toString() {
-        return task.getPresentableName();
+        return getTask().getPresentableName();
+    }
+
+    public void setTask(Task task) {
+        setUserObject(task);
     }
 }

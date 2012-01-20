@@ -1,12 +1,17 @@
 package org.github.olloginov.ideataskbrowser;
 
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.tasks.Task;
-import org.github.olloginov.ideataskbrowser.model.TaskSearchEventListener;
+import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
-import org.github.olloginov.ideataskbrowser.tasks.UpdateRepositoriesTask;
+import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesTask;
+import org.github.olloginov.ideataskbrowser.tasks.ImportNewSearchesTask;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
 import org.jetbrains.annotations.NotNull;
@@ -14,12 +19,13 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreeNode;
 
-public class TaskBrowserService extends TaskBrowser {
+@State(name = "TaskBrowser", storages = {@Storage(file = "$WORKSPACE_FILE$")})
+public class TaskBrowserService extends TaskBrowser implements ProjectComponent, PersistentStateComponent<TaskBrowserConfig> {
     private final Project project;
 
-    private final TaskSearchList searchList = new TaskSearchList();
+    final TaskSearchList searchList = new TaskSearchList();
 
-    private TaskBrowserPanel panel = new TaskBrowserPanel();
+    private TaskBrowserPanel panel;
     private SimpleToolWindowPanel panelContainer;
 
     public TaskBrowserService(Project project) {
@@ -28,10 +34,50 @@ public class TaskBrowserService extends TaskBrowser {
 
     @NotNull
     @Override
-    public SimpleToolWindowPanel getPanel() {
-        if (panelContainer == null) {
-            panelContainer = panel.wrapInToolWindowPanel();
+    public String getComponentName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public void initComponent() {
+        panel = new TaskBrowserPanel();
+        panel.setList(searchList);
+
+        panelContainer = panel.wrapInToolWindowPanel();
+    }
+
+    @Override
+    public void disposeComponent() {
+        if (panelContainer != null) {
+            panelContainer = null;
         }
+        if (panel != null) {
+            panel = null;
+        }
+    }
+
+    @Override
+    public void projectOpened() {
+        importChanges();
+    }
+
+    @Override
+    public void projectClosed() {
+    }
+
+    @Override
+    public TaskBrowserConfig getState() {
+        return new TaskBrowserServicePersister(this).save();
+    }
+
+    @Override
+    public void loadState(TaskBrowserConfig state) {
+        new TaskBrowserServicePersister(this).load(state);
+    }
+
+    @NotNull
+    @Override
+    public SimpleToolWindowPanel getPanel() {
         return panelContainer;
     }
 
@@ -46,8 +92,9 @@ public class TaskBrowserService extends TaskBrowser {
     }
 
     @Override
-    public void refreshAll() {
-        ProgressManager.getInstance().run(new UpdateRepositoriesTask(this));
+    public void importChanges() {
+        ProgressManager.getInstance().run(new ImportNewSearchesTask(getProject(), searchList));
+        ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), panel.getTreeModel()));
     }
 
     @NotNull
@@ -56,13 +103,9 @@ public class TaskBrowserService extends TaskBrowser {
         return project;
     }
 
+    @NotNull
     @Override
-    public void addListener(TaskSearchEventListener listener) {
-        searchList.getDispatcher().addListener(listener);
-    }
-
-    @Override
-    public void removeListener(TaskSearchEventListener listener) {
-        searchList.getDispatcher().removeListener(listener);
+    public TaskSearchList getSearchList() {
+        return searchList;
     }
 }
