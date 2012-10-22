@@ -23,6 +23,8 @@ import java.util.Date;
 public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     private static final Logger logger = Logger.getInstance(FetchNewIssuesFromRepoTask.class);
 
+    public static final int FETCH_ISSUES_BUFFER_SIZE = 1024;
+
     private final TreeNodeRef<TaskSearchTreeNode> searchNode;
     private final TaskBrowserNotifier notifier;
 
@@ -45,6 +47,9 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         public ProgressIndicator indicator;
         public TaskRepository repository;
 
+        public int addedCount;
+        public int updatedCount;
+
         public boolean isAlive() {
             return repository != null;
         }
@@ -55,7 +60,8 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         TaskSearch search = getSearch();
 
         TaskRepository repository = null;
-        for (TaskRepository taskRepository : TaskManager.getManager(myProject).getAllRepositories()) {
+        TaskManager manager = TaskManager.getManager(myProject);
+        for (TaskRepository taskRepository : manager.getAllRepositories()) {
             if (search.getRepository().equals(taskRepository.getPresentableName())) {
                 repository = taskRepository;
                 break;
@@ -90,9 +96,17 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     public void importNew(FetchContext ctx) {
         String title = TaskBrowserBundle.message("task.FetchNewIssuesTask.title", ctx.repository.getPresentableName());
         try {
-            int tasks = fetchAll(ctx);
-            if (tasks > 0) {
-                notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.newIssues", tasks));
+            fetchAll(ctx);
+            if (ctx.addedCount > 0 && ctx.updatedCount > 0) {
+                if (ctx.addedCount == ctx.updatedCount) {
+                    notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.added", ctx.addedCount, pluralize("task", ctx.addedCount)));
+                } else {
+                    notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.addedAndUpdated", ctx.addedCount, pluralize("task", ctx.addedCount), ctx.updatedCount));
+                }
+            } else if (ctx.addedCount > 0) {
+                notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.added", ctx.addedCount, pluralize("task", ctx.addedCount)));
+            } else if (ctx.updatedCount > 0) {
+                notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.updated", ctx.updatedCount, pluralize("task", ctx.updatedCount)));
             } else {
                 notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.noIssues"));
             }
@@ -104,50 +118,52 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
     }
 
-    private int fetchAll(final FetchContext ctx) throws RepositoryException, InvocationTargetException, InterruptedException {
+    private String pluralize(String messageBase, int count) {
+        return TaskBrowserBundle.message(messageBase + (count > 1 ? ".many" : ".1"));
+    }
+
+    private void fetchAll(final FetchContext ctx) throws RepositoryException, InvocationTargetException, InterruptedException {
         String name = ctx.repository.getPresentableName();
         ctx.indicator.setText(TaskBrowserBundle.message("task.FetchNewIssuesTask.starting", name));
 
-        Date skipFetchBefore = getNode().getLatestTaskDate();
-
+        Date latestTaskDate = getNode().getLatestTaskDate();
         String fetchQuery = getNode().getSearch().getQuery();
-        Date fetchDate = new Date();
 
-
-        int count = 0;
-        while (count < 100 && (skipFetchBefore == null || skipFetchBefore.after(fetchDate))) {
+        Date fetchNext = latestTaskDate == null ? new Date(0) : latestTaskDate;
+        Date fetchDate;
+        do {
+            fetchDate = fetchNext;
             com.intellij.tasks.Task[] tasks = fetchChanges(ctx, fetchDate, fetchQuery);
             if (tasks == null || tasks.length <= 0) {
                 break;
             }
 
             for (final com.intellij.tasks.Task task : tasks) {
-                Date taskCreated = task.getCreated();
-                if (taskCreated == null) {
+                Date taskChangeDate = max(task.getUpdated(), task.getCreated());
+                if (taskChangeDate == null) {
                     throw new RepositoryException(TaskBrowserBundle.message("error.unsupported.noCreatedDate"));
                 }
 
                 int taskNodeIndex = getNode().findTaskNode(task);
-                if (taskNodeIndex >= 0) {
-                    // node was found
-                    skipFetchBefore = fetchDate;
-                    break;
+                if (taskNodeIndex < 0) {
+                    ctx.addedCount++;
+
+                    // node not found, but got place where insert
+                    final int insertAt = -(taskNodeIndex + 1);
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            searchNode.insertChild(insertAt, new TaskTreeNode(task));
+                        }
+                    });
+                } else {
+                    ctx.updatedCount++;
                 }
 
-                // node not found, but got place where insert
-                final int insertAt = -(taskNodeIndex + 1);
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        searchNode.insertChild(insertAt, new TaskTreeNode(task));
-                    }
-                });
-
-                fetchDate = min(fetchDate, taskCreated);
-                count++;
+                fetchNext = max(fetchNext, taskChangeDate);
             }
         }
-        return count;
+        while (!fetchNext.equals(fetchDate));
     }
 
     private Date min(Date a, Date b) {
@@ -157,9 +173,16 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         return a.before(b) ? a : b;
     }
 
+    private Date max(Date a, Date b) {
+        if (a == null || b == null) {
+            return a == null ? b : a;
+        }
+        return a.after(b) ? a : b;
+    }
+
     public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, Date date, String fetchQuery) throws RepositoryException {
         try {
-            return ctx.repository.getIssues(fetchQuery, 20, date.getTime() - 1);
+            return ctx.repository.getIssues(fetchQuery, FETCH_ISSUES_BUFFER_SIZE, date.getTime());
         } catch (Exception e) {
             throw new RepositoryException(TaskBrowserBundle.message("error.connection.broken"), e);
         }
