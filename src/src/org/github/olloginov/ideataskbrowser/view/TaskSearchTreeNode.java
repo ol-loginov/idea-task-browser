@@ -2,6 +2,7 @@ package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.tasks.Task;
 import org.github.olloginov.ideataskbrowser.model.TaskSearch;
+import org.github.olloginov.ideataskbrowser.util.TaskHelper;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,12 +30,12 @@ public class TaskSearchTreeNode extends DefaultMutableTreeNode implements Custom
                 return index;
             }
 
-            Date taskCreated = task.getCreated();
-            if (taskCreated == null) {
-                throw new IllegalStateException("Task should have 'created at' attribute");
+            Date taskChange = TaskHelper.getChangeDate(task);
+            if (taskChange == null) {
+                throw new IllegalStateException("Task has no last modified time");
             }
 
-            if (taskCreated.after(taskNode.getTask().getCreated())) {
+            if (taskChange.after(TaskHelper.getChangeDate(taskNode.getTask()))) {
                 break;
             }
         }

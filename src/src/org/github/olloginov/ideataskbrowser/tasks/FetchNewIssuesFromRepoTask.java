@@ -11,6 +11,7 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 import org.github.olloginov.ideataskbrowser.TaskBrowserNotifier;
 import org.github.olloginov.ideataskbrowser.exceptions.RepositoryException;
 import org.github.olloginov.ideataskbrowser.model.TaskSearch;
+import org.github.olloginov.ideataskbrowser.util.TaskHelper;
 import org.github.olloginov.ideataskbrowser.view.TaskSearchTreeNode;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
 import org.github.olloginov.ideataskbrowser.view.TreeNodeRef;
@@ -139,7 +140,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
             }
 
             for (final com.intellij.tasks.Task task : tasks) {
-                Date taskChangeDate = max(task.getUpdated(), task.getCreated());
+                Date taskChangeDate = TaskHelper.getChangeDate(task);
                 if (taskChangeDate == null) {
                     throw new RepositoryException(TaskBrowserBundle.message("error.unsupported.noCreatedDate"));
                 }
@@ -160,24 +161,10 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
                     ctx.updatedCount++;
                 }
 
-                fetchNext = max(fetchNext, taskChangeDate);
+                fetchNext = TaskHelper.max(fetchNext, taskChangeDate);
             }
         }
         while (!fetchNext.equals(fetchDate));
-    }
-
-    private Date min(Date a, Date b) {
-        if (a == null || b == null) {
-            return a == null ? b : a;
-        }
-        return a.before(b) ? a : b;
-    }
-
-    private Date max(Date a, Date b) {
-        if (a == null || b == null) {
-            return a == null ? b : a;
-        }
-        return a.after(b) ? a : b;
     }
 
     public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, Date date, String fetchQuery) throws RepositoryException {
@@ -188,7 +175,6 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
     }
 
-
     public com.intellij.tasks.Task updateTask(FetchContext ctx, com.intellij.tasks.Task task) {
         try {
             return ctx.repository.findTask(task.getId());
@@ -198,7 +184,6 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     }
 
     private void updateCurrent(FetchContext ctx) {
-
         for (int index = 0, length = getNode().getChildCount(); index < length; ++index) {
             ctx.indicator.setFraction(index / (float) length);
 
