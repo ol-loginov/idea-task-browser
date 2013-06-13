@@ -28,8 +28,9 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png"
-                    factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
+        <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png" factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
+
+        <projectConfigurable instance="org.github.olloginov.ideataskbrowser.config.TaskBrowserConfigEditor" nonDefaultProject="true"/>
     </extensions>
 
 </idea-plugin>

@@ -18,6 +18,14 @@ public class TaskSearchList implements ListModel {
 
     private EventDispatcher<ListDataListener> dataDispatcher = EventDispatcher.create(ListDataListener.class);
 
+    public void clear() {
+        int lastSize = getSize();
+        if (lastSize > 0) {
+            list.clear();
+            dataDispatcher.getMulticaster().intervalRemoved(new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, 0, lastSize - 1));
+        }
+    }
+
     @Override
     public int getSize() {
         return list.size();

@@ -1,6 +1,5 @@
 package org.github.olloginov.ideataskbrowser.model;
 
-import com.intellij.util.xmlb.annotations.Attribute;
 import com.intellij.util.xmlb.annotations.Tag;
 import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.NotNull;
@@ -18,10 +17,14 @@ public class TaskSearch {
 
     private AtomicBoolean updating = new AtomicBoolean(false);
 
-    @Attribute("uid")
+    @Tag("uid")
     @NotNull
     public String getUid() {
         return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid == null ? this.uid : uid;
     }
 
     @Tag("repository")

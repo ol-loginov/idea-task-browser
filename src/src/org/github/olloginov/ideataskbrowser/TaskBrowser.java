@@ -1,14 +1,15 @@
 package org.github.olloginov.ideataskbrowser;
 
+import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
-import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
+import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public abstract class TaskBrowser {
+public abstract class TaskBrowser implements PersistentStateComponent<TaskBrowserConfig> {
     public static final String COMPONENT_NAME = "Task Browser";
 
     @Nullable
@@ -18,6 +19,8 @@ public abstract class TaskBrowser {
 
     public abstract void importChanges();
 
+    public abstract void reloadChanges();
+
     @Nullable
     public abstract Task getSelectedTask();
 
@@ -26,7 +29,4 @@ public abstract class TaskBrowser {
 
     @NotNull
     public abstract JComponent getPanel();
-
-    @NotNull
-    public abstract TaskSearchList getSearchList();
 }

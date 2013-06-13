@@ -11,4 +11,13 @@ public class TaskBrowserConfig {
     @Property
     @AbstractCollection(elementTag = "search")
     public List<TaskSearch> searches = new ArrayList<TaskSearch>();
+
+    @Property
+    public DoubleClickAction doubleClickAction = DoubleClickAction.NOTHING;
+
+    public static enum DoubleClickAction {
+        NOTHING,
+        SWITCH_CONTEXT,
+        OPEN_IN_BROWSER
+    }
 }

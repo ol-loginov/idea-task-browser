@@ -2,18 +2,22 @@ package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
+import org.github.olloginov.ideataskbrowser.TaskBrowserService;
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction;
 import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction;
 import org.github.olloginov.ideataskbrowser.actions.RefreshListAction;
-import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
+import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class TaskBrowserPanel {
     private static final String TOOL_WINDOW_ID = "TaskBrowser";
@@ -24,14 +28,38 @@ public class TaskBrowserPanel {
     private JPanel preview;
     private JScrollPane treeScroll;
 
-    private TaskTreeModel treeModel;
-
-    public TaskBrowserPanel() {
+    public TaskBrowserPanel(final TaskBrowserService browserService) {
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setCellRenderer(new TaskTreeRenderer());
 
-        setList(new TaskSearchList());
+        setTreeModel(new TaskTreeModel());
         initToolbarActions();
+
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() <= 1) return;
+
+                TaskBrowserConfig config = browserService.getState();
+                if (config == null) return;
+
+                AnAction action;
+                switch (config.doubleClickAction) {
+                    case SWITCH_CONTEXT:
+                        action = new OpenInContextAction();
+                        break;
+                    case OPEN_IN_BROWSER:
+                        action = new OpenInBrowserAction();
+                        break;
+                    default:
+                        action = null;
+                }
+
+                if (action != null) {
+                    ActionManager.getInstance().tryToExecute(action, e, TaskBrowserPanel.this.tree, null, true);
+                }
+            }
+        });
     }
 
     private void initToolbarActions() {
@@ -51,12 +79,8 @@ public class TaskBrowserPanel {
         return panel;
     }
 
-    public void setList(TaskSearchList searchList) {
-        tree.setModel(treeModel = new TaskTreeModel(searchList));
-    }
-
-    public TaskTreeModel getTreeModel() {
-        return treeModel;
+    public void setTreeModel(TaskTreeModel treeModel) {
+        this.tree.setModel(treeModel);
     }
 
     public TreeNode getSelectedNode() {

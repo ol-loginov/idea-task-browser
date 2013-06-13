@@ -6,8 +6,10 @@ import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
 
 public class OpenInContextAction extends AnActionImpl {
+    public static final String ID = "OpenInContext";
+
     public OpenInContextAction() {
-        super("OpenInContext");
+        super(ID);
     }
 
     @Override

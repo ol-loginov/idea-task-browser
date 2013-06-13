@@ -6,8 +6,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
 
 public class OpenInBrowserAction extends AnActionImpl {
+    public static final String ID = "OpenInBrowser";
+
     public OpenInBrowserAction() {
-        super("OpenInBrowser");
+        super(ID);
     }
 
     @Override

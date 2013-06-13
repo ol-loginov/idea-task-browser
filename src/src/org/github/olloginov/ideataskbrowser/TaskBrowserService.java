@@ -1,35 +1,40 @@
 package org.github.olloginov.ideataskbrowser;
 
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.tasks.Task;
+import com.intellij.util.ui.UIUtil;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
 import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesTask;
 import org.github.olloginov.ideataskbrowser.tasks.ImportNewSearchesTask;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
+import org.github.olloginov.ideataskbrowser.view.TaskTreeModel;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.TreeNode;
 
-@State(name = "TaskBrowser", storages = {@Storage(file = "$WORKSPACE_FILE$")})
-public class TaskBrowserService extends TaskBrowser implements ProjectComponent, PersistentStateComponent<TaskBrowserConfig> {
+@State(name = "TaskBrowser", storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
+public class TaskBrowserService extends TaskBrowser implements ProjectComponent {
     private final Project project;
 
     final TaskSearchList searchList = new TaskSearchList();
+    TaskBrowserConfig.DoubleClickAction doubleClickAction = TaskBrowserConfig.DoubleClickAction.NOTHING;
 
-    private TaskBrowserPanel panel;
-    private SimpleToolWindowPanel panelContainer;
+    private TaskTreeModel taskTreeModel;
+    private TaskBrowserPanel taskTreePanel;
+    private SimpleToolWindowPanel taskTreeContainer;
 
     public TaskBrowserService(Project project) {
         this.project = project;
+        this.taskTreeModel = new TaskTreeModel(searchList);
     }
 
     @NotNull
@@ -40,19 +45,19 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
 
     @Override
     public void initComponent() {
-        panel = new TaskBrowserPanel();
-        panel.setList(searchList);
+        taskTreePanel = new TaskBrowserPanel(this);
+        taskTreePanel.setTreeModel(taskTreeModel);
 
-        panelContainer = panel.wrapInToolWindowPanel();
+        taskTreeContainer = taskTreePanel.wrapInToolWindowPanel();
     }
 
     @Override
     public void disposeComponent() {
-        if (panelContainer != null) {
-            panelContainer = null;
+        if (taskTreeContainer != null) {
+            taskTreeContainer = null;
         }
-        if (panel != null) {
-            panel = null;
+        if (taskTreePanel != null) {
+            taskTreePanel = null;
         }
     }
 
@@ -78,13 +83,13 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
     @NotNull
     @Override
     public SimpleToolWindowPanel getPanel() {
-        return panelContainer;
+        return taskTreeContainer;
     }
 
     @Nullable
     @Override
     public Task getSelectedTask() {
-        TreeNode node = panel.getSelectedNode();
+        TreeNode node = taskTreePanel.getSelectedNode();
         if (node != null && node instanceof TaskTreeNode) {
             return ((TaskTreeNode) node).getTask();
         }
@@ -93,19 +98,28 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
 
     @Override
     public void importChanges() {
-        ProgressManager.getInstance().run(new ImportNewSearchesTask(getProject(), searchList));
-        ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), panel.getTreeModel()));
+        UIUtil.invokeLaterIfNeeded(new Runnable() {
+            @Override
+            public void run() {
+                ProgressManager.getInstance().run(new ImportNewSearchesTask(getProject(), searchList));
+                ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), taskTreeModel));
+            }
+        });
+    }
+
+    @Override
+    public void reloadChanges() {
+        UIUtil.invokeLaterIfNeeded(new Runnable() {
+            @Override
+            public void run() {
+                ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), taskTreeModel));
+            }
+        });
     }
 
     @NotNull
     @Override
     public Project getProject() {
         return project;
-    }
-
-    @NotNull
-    @Override
-    public TaskSearchList getSearchList() {
-        return searchList;
     }
 }
