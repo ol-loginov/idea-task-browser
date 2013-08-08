@@ -29,6 +29,6 @@ public class OpenInContextAction extends AnActionImpl {
             return;
         }
 
-        TaskManager.getManager(project).activateTask(task, true, true);
+        TaskManager.getManager(project).activateTask(task, true);
     }
 }

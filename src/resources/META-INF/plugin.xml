@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <vendor>ol-loginov</vendor>
 
     <idea-version since-build="130.1250"/>
@@ -10,9 +10,6 @@
     <depends>com.intellij.tasks</depends>
 
     <resource-bundle>org.github.olloginov.ideataskbrowser.TaskBrowserBundle</resource-bundle>
-
-    <application-components>
-    </application-components>
 
     <project-components>
         <component>
@@ -25,13 +22,9 @@
         </component>
     </project-components>
 
-    <actions>
-    </actions>
-
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png" factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
 
         <projectConfigurable instance="org.github.olloginov.ideataskbrowser.config.TaskBrowserConfigEditor" nonDefaultProject="true"/>
     </extensions>
-
 </idea-plugin>
