@@ -21,10 +21,9 @@ public class OpenInContextAction extends AnActionImpl {
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
-        if (project == null) {
-            return;
+        if (project != null) {
+            activateLocalTask(project);
         }
-        activateLocalTask(e.getProject());
     }
 
     private void activateLocalTask(Project project) {
