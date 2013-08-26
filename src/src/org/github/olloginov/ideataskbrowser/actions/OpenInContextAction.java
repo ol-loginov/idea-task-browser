@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskManager;
+import com.intellij.tasks.impl.TaskManagerImpl;
 
 public class OpenInContextAction extends AnActionImpl {
     public static final String ID = "OpenInContext";
@@ -34,6 +35,9 @@ public class OpenInContextAction extends AnActionImpl {
 
         TaskManager taskManager = TaskManager.getManager(project);
         LocalTask localTask = taskManager.activateTask(task, true);
-        taskManager.performVcsOperation(localTask, TaskManager.VcsOperation.CREATE_CHANGELIST);
+
+        if (localTask.getChangeLists().isEmpty() && taskManager instanceof TaskManagerImpl) {
+            ((TaskManagerImpl) taskManager).createChangeList(localTask, localTask.getPresentableName());
+        }
     }
 }
