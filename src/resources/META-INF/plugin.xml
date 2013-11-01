@@ -1,8 +1,15 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
     <vendor>ol-loginov</vendor>
+    <change-notes><![CDATA[
+Version 0.1.6 changes:
+<ul>
+    <li>baloon is non-sticky now</li>
+    <li>sorting in task tree is more user-friendly</li>
+</ul>
+]]></change-notes>
 
     <idea-version since-build="130.1250"/>
 
