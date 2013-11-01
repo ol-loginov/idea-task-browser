@@ -14,7 +14,7 @@ public class TaskBrowserNotifier extends AbstractProjectComponent {
     @Override
     public void initComponent() {
         super.initComponent();
-        NotificationsConfiguration.getNotificationsConfiguration().register(NOTIFICATION_GROUP, NotificationDisplayType.STICKY_BALLOON, true);
+        NotificationsConfiguration.getNotificationsConfiguration().register(NOTIFICATION_GROUP, NotificationDisplayType.BALLOON, true);
     }
 
     private void notify(String title, String message, NotificationType messageType) {
