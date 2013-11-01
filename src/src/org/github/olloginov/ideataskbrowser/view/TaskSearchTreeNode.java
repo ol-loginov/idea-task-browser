@@ -6,6 +6,8 @@ import org.github.olloginov.ideataskbrowser.util.TaskHelper;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 public class TaskSearchTreeNode extends DefaultMutableTreeNode implements CustomIcon {
@@ -23,23 +25,16 @@ public class TaskSearchTreeNode extends DefaultMutableTreeNode implements Custom
     }
 
     public int findTaskNode(Task task) {
-        int index = 0;
-        for (int end = getChildCount(); index < end; ++index) {
-            TaskTreeNode taskNode = getChildAt(index);
-            if (task.getId().equals(taskNode.getTask().getId())) {
-                return index;
-            }
-
-            Date taskChange = TaskHelper.getChangeDate(task);
-            if (taskChange == null) {
-                throw new IllegalStateException("Task has no last modified time");
-            }
-
-            if (taskChange.after(TaskHelper.getChangeDate(taskNode.getTask()))) {
-                break;
-            }
+        String children[] = new String[getChildCount()];
+        for (int i = 0; i < children.length; ++i) {
+            children[i] = getChildAt(i).getTask().getId();
         }
-        return -(index + 1);
+        return Arrays.binarySearch(children, task.getId(), new Comparator<String>() {
+            @Override
+            public int compare(String a, String b) {
+                return a.compareTo(b);
+            }
+        });
     }
 
     @Override
@@ -48,10 +43,20 @@ public class TaskSearchTreeNode extends DefaultMutableTreeNode implements Custom
     }
 
     public Date getLatestTaskDate() {
-        if (getChildCount() <= 0) {
-            return null;
+        Date date = null;
+        for (int index = getChildCount() - 1; index >= 0; --index) {
+            TaskTreeNode taskNode = getChildAt(index);
+
+            Date taskChange = TaskHelper.getChangeDate(taskNode.getTask());
+            if (taskChange == null) {
+                continue;
+            }
+
+            if (date == null || taskChange.after(date)) {
+                date = taskChange;
+            }
         }
-        return getChildAt(0).getTask().getCreated();
+        return date;
     }
 
     @Override
