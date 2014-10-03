@@ -21,17 +21,29 @@
             <properties>
               <background swing-color="EditorPane.background"/>
             </properties>
-            <border type="empty">
+            <border type="none">
               <size top="5" left="5" bottom="5" right="5"/>
             </border>
             <children>
-              <component id="7146f" class="javax.swing.JEditorPane" binding="previewHtml">
+              <scrollpane id="cebca">
                 <constraints border-constraint="Center"/>
                 <properties>
-                  <contentType value="text/html" noi18n="true"/>
-                  <editable value="false"/>
+                  <background swing-color="EditorPane.selectionForeground"/>
+                  <foreground swing-color="EditorPane.background"/>
                 </properties>
-              </component>
+                <border type="none">
+                  <size top="0" left="5" bottom="0" right="0"/>
+                </border>
+                <children>
+                  <component id="7146f" class="javax.swing.JEditorPane" binding="previewHtml">
+                    <constraints/>
+                    <properties>
+                      <contentType value="text/html" noi18n="true"/>
+                      <editable value="false"/>
+                    </properties>
+                  </component>
+                </children>
+              </scrollpane>
             </children>
           </grid>
           <scrollpane id="3c7cc" binding="treeScroll">

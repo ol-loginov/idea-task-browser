@@ -111,14 +111,15 @@ public class TaskBrowserPanel {
             dateString = df.format(TaskHelper.getChangeDate(task));
         }
 
-        StringBuilder html = new StringBuilder()
+        StringBuilder html = new StringBuilder("<html><body style='padding: 5px;'>")
                 .append(String.format("<small>%s</small><br>", dateString))
                 .append(String.format("<b>%s</b><br><br>", htmlSafe(task.getPresentableName())))
                 .append(String.format("<p>%s</p><br><br><br>", task.getDescription() == null ? "" : htmlBreak(task.getDescription())));
 
         for (Comment comment : task.getComments()) {
-            html.append(String.format("<small>%s</small> %s<br>%s<br>", df.format(comment.getDate()), htmlSafe(comment.getAuthor()), htmlBreak(comment.getText())));
+            html.append(String.format("<b>%s</b> <small>%s</small><br>%s<br>", df.format(comment.getDate()), htmlSafe(comment.getAuthor()), comment.getText()));
         }
+        html.append("</body></html>");
         previewHtml.setText(html.toString());
     }
 
@@ -167,11 +168,14 @@ public class TaskBrowserPanel {
         preview.setLayout(new BorderLayout(0, 0));
         preview.setBackground(UIManager.getColor("EditorPane.background"));
         contentSplitter.setRightComponent(preview);
-        preview.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        scrollPane1.setBackground(UIManager.getColor("EditorPane.selectionForeground"));
+        scrollPane1.setForeground(UIManager.getColor("EditorPane.background"));
+        preview.add(scrollPane1, BorderLayout.CENTER);
         previewHtml = new JEditorPane();
         previewHtml.setContentType("text/html");
         previewHtml.setEditable(false);
-        preview.add(previewHtml, BorderLayout.CENTER);
+        scrollPane1.setViewportView(previewHtml);
         treeScroll = new JScrollPane();
         contentSplitter.setLeftComponent(treeScroll);
         tree = new JTree();

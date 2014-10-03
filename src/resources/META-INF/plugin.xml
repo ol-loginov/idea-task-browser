@@ -1,9 +1,14 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.7</version>
+    <version>0.1.8</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.8 changes:
+<ul>
+    <li>add scroll support for task details</li>
+    <li>style changes</li>
+</ul>
 Version 0.1.7 changes:
 <ul>
     <li>works with tasks without createdAt and updatedAt dates</li>
