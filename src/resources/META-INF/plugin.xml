@@ -1,9 +1,14 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.6</version>
+    <version>0.1.7</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.7 changes:
+<ul>
+    <li>works with tasks without createdAt and updatedAt dates</li>
+    <li>use right pane for some information</li>
+</ul>
 Version 0.1.6 changes:
 <ul>
     <li>baloon is non-sticky now</li>

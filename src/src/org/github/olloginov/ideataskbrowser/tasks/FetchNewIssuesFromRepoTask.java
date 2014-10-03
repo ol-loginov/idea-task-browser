@@ -140,11 +140,6 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
             }
 
             for (final com.intellij.tasks.Task task : tasks) {
-                Date taskChangeDate = TaskHelper.getChangeDate(task);
-                if (taskChangeDate == null) {
-                    throw new RepositoryException(TaskBrowserBundle.message("error.unsupported.noCreatedDate"));
-                }
-
                 int taskNodeIndex = getNode().findTaskNode(task);
                 if (taskNodeIndex < 0) {
                     ctx.addedCount++;
@@ -161,10 +156,10 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
                     ctx.updatedCount++;
                 }
 
-                fetchNext = TaskHelper.max(fetchNext, taskChangeDate);
+                fetchNext = TaskHelper.max(fetchNext, TaskHelper.getChangeDate(task));
             }
         }
-        while (!fetchNext.equals(fetchDate));
+        while (fetchNext != null && !fetchNext.equals(fetchDate));
     }
 
     public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, Date date, String fetchQuery) throws RepositoryException {
