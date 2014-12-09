@@ -1,9 +1,13 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.9 changes:
+<ul>
+    <li>migration up to IDEA 14</li>
+</ul>
 Version 0.1.8 changes:
 <ul>
     <li>add scroll support for task details</li>
@@ -21,7 +25,7 @@ Version 0.1.6 changes:
 </ul>
 ]]></change-notes>
 
-    <idea-version since-build="130.1250"/>
+    <idea-version since-build="139.658"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.tasks</depends>

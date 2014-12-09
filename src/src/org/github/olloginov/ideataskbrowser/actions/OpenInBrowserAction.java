@@ -21,7 +21,7 @@ public class OpenInBrowserAction extends AnActionImpl {
     public void actionPerformed(AnActionEvent e) {
         String taskUrl = getIssueUrl(e.getProject());
         if (taskUrl != null) {
-            BrowserUtil.launchBrowser(taskUrl);
+            BrowserUtil.browse(taskUrl);
         }
     }
 

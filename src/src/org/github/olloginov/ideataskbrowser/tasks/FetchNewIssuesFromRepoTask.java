@@ -11,7 +11,6 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 import org.github.olloginov.ideataskbrowser.TaskBrowserNotifier;
 import org.github.olloginov.ideataskbrowser.exceptions.RepositoryException;
 import org.github.olloginov.ideataskbrowser.model.TaskSearch;
-import org.github.olloginov.ideataskbrowser.util.TaskHelper;
 import org.github.olloginov.ideataskbrowser.view.TaskSearchTreeNode;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
 import org.github.olloginov.ideataskbrowser.view.TreeNodeRef;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 
 public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     private static final Logger logger = Logger.getInstance(FetchNewIssuesFromRepoTask.class);
@@ -127,44 +125,35 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         String name = ctx.repository.getPresentableName();
         ctx.indicator.setText(TaskBrowserBundle.message("task.FetchNewIssuesTask.starting", name));
 
-        Date latestTaskDate = getNode().getLatestTaskDate();
         String fetchQuery = getNode().getSearch().getQuery();
 
-        Date fetchNext = latestTaskDate == null ? new Date(0) : latestTaskDate;
-        Date fetchDate;
-        do {
-            fetchDate = fetchNext;
-            com.intellij.tasks.Task[] tasks = fetchChanges(ctx, fetchDate, fetchQuery);
-            if (tasks == null || tasks.length <= 0) {
-                break;
-            }
+        com.intellij.tasks.Task[] tasks = fetchChanges(ctx, 0, FETCH_ISSUES_BUFFER_SIZE, fetchQuery);
+        if (tasks == null || tasks.length <= 0) {
+            return;
+        }
 
-            for (final com.intellij.tasks.Task task : tasks) {
-                int taskNodeIndex = getNode().findTaskNode(task);
-                if (taskNodeIndex < 0) {
-                    ctx.addedCount++;
+        for (final com.intellij.tasks.Task task : tasks) {
+            int taskNodeIndex = getNode().findTaskNode(task);
+            if (taskNodeIndex < 0) {
+                ctx.addedCount++;
 
-                    // node not found, but got place where insert
-                    final int insertAt = -(taskNodeIndex + 1);
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        @Override
-                        public void run() {
-                            searchNode.insertChild(insertAt, new TaskTreeNode(task));
-                        }
-                    });
-                } else {
-                    ctx.updatedCount++;
-                }
-
-                fetchNext = TaskHelper.max(fetchNext, TaskHelper.getChangeDate(task));
+                // node not found, but got place where insert
+                final int insertAt = -(taskNodeIndex + 1);
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchNode.insertChild(insertAt, new TaskTreeNode(task));
+                    }
+                });
+            } else {
+                ctx.updatedCount++;
             }
         }
-        while (fetchNext != null && !fetchNext.equals(fetchDate));
     }
 
-    public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, Date date, String fetchQuery) throws RepositoryException {
+    public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, int offset, int limit, String fetchQuery) throws RepositoryException {
         try {
-            return ctx.repository.getIssues(fetchQuery, FETCH_ISSUES_BUFFER_SIZE, date.getTime());
+            return ctx.repository.getIssues(fetchQuery, offset, limit, false);
         } catch (Exception e) {
             throw new RepositoryException(TaskBrowserBundle.message("error.connection.broken"), e);
         }
