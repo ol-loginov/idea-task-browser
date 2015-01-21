@@ -1,9 +1,13 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.9</version>
+    <version>0.1.10</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.10 changes:
+<ul>
+    <li>built with java 6</li>
+</ul>
 Version 0.1.9 changes:
 <ul>
     <li>migration up to IDEA 14</li>
