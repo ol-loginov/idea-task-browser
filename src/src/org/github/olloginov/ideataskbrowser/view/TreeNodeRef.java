@@ -1,5 +1,6 @@
 package org.github.olloginov.ideataskbrowser.view;
 
+import javax.swing.*;
 import javax.swing.tree.MutableTreeNode;
 
 public class TreeNodeRef<T extends MutableTreeNode> {
@@ -19,7 +20,12 @@ public class TreeNodeRef<T extends MutableTreeNode> {
         model.insertNodeInto(child, node, index);
     }
 
-    public void updateChild(TaskTreeNode child) {
-        model.nodeChanged(child);
+    public void updateChild(final TaskTreeNode child) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                model.nodeChanged(child);
+            }
+        });
     }
 }
