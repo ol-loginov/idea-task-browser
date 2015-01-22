@@ -2,10 +2,8 @@ package org.github.olloginov.ideataskbrowser.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.tasks.LocalTask;
 import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskManager;
-import com.intellij.tasks.impl.TaskManagerImpl;
+import com.intellij.tasks.actions.OpenTaskDialog;
 
 public class OpenInContextAction extends AnActionImpl {
     public static final String ID = "OpenInContext";
@@ -32,12 +30,6 @@ public class OpenInContextAction extends AnActionImpl {
         if (task == null) {
             return;
         }
-
-        TaskManager taskManager = TaskManager.getManager(project);
-        LocalTask localTask = taskManager.activateTask(task, true);
-
-        if (localTask.getChangeLists().isEmpty() && taskManager instanceof TaskManagerImpl) {
-            ((TaskManagerImpl) taskManager).createChangeList(localTask, localTask.getPresentableName());
-        }
+        new OpenTaskDialog(project, task).show();
     }
 }
