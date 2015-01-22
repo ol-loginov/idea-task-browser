@@ -110,7 +110,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
                 notifier.info(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.finishing.noIssues"));
             }
         } catch (Exception e) {
-            notifier.error(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.fetchError"));
+            notifier.error(title, TaskBrowserBundle.message("task.FetchNewIssuesTask.fetchError", e.getMessage()));
             if (!(e instanceof RepositoryException)) {
                 logger.error(e);
             }
@@ -153,7 +153,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
 
     public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, int offset, int limit, String fetchQuery) throws RepositoryException {
         try {
-            return ctx.repository.getIssues(fetchQuery, offset, limit, false);
+            return ctx.repository.getIssues(fetchQuery, offset, limit, false, ctx.indicator);
         } catch (Exception e) {
             throw new RepositoryException(TaskBrowserBundle.message("error.connection.broken"), e);
         }
