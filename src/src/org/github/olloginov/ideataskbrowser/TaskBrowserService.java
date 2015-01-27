@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.tasks.Task;
+import com.intellij.tasks.TaskState;
 import com.intellij.util.ui.UIUtil;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
@@ -15,26 +16,36 @@ import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesTask;
 import org.github.olloginov.ideataskbrowser.tasks.ImportNewSearchesTask;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel;
+import org.github.olloginov.ideataskbrowser.view.TaskTreeModelWithFilter;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.tree.TreeNode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @State(name = "TaskBrowser", storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
-public class TaskBrowserService extends TaskBrowser implements ProjectComponent {
+public class TaskBrowserService extends TaskBrowser implements ProjectComponent, TaskBrowserServiceState {
     private final Project project;
 
     final TaskSearchList searchList = new TaskSearchList();
+
+    final List<TaskState> searchFilters = new ArrayList<TaskState>();
     TaskBrowserConfig.DoubleClickAction doubleClickAction = TaskBrowserConfig.DoubleClickAction.NOTHING;
 
     private TaskTreeModel taskTreeModel;
+    private TaskTreeModelWithFilter taskTreeModelWithFilter;
+
     private TaskBrowserPanel taskTreePanel;
     private SimpleToolWindowPanel taskTreeContainer;
 
     public TaskBrowserService(Project project) {
         this.project = project;
         this.taskTreeModel = new TaskTreeModel(searchList);
+        this.taskTreeModelWithFilter = new TaskTreeModelWithFilter(taskTreeModel, getEnabledFilters());
     }
 
     @NotNull
@@ -46,7 +57,7 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent 
     @Override
     public void initComponent() {
         taskTreePanel = new TaskBrowserPanel(this);
-        taskTreePanel.setTreeModel(taskTreeModel);
+        taskTreePanel.setTreeModel(taskTreeModelWithFilter);
 
         taskTreeContainer = taskTreePanel.wrapInToolWindowPanel();
     }
@@ -112,6 +123,7 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent 
         UIUtil.invokeLaterIfNeeded(new Runnable() {
             @Override
             public void run() {
+                taskTreeModelWithFilter.setStateFilter(getEnabledFilters());
                 ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), taskTreeModel));
             }
         });
@@ -121,5 +133,35 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent 
     @Override
     public Project getProject() {
         return project;
+    }
+
+    public List<TaskState> getEnabledFilters() {
+        return Collections.unmodifiableList(searchFilters);
+    }
+
+    @Override
+    public boolean isFilterEnabled(TaskState target) {
+        return searchFilters.contains(target);
+    }
+
+    @Override
+    public void setFilterEnabled(TaskState target, boolean state) {
+        boolean enabled = isFilterEnabled(target);
+        if (enabled == state) {
+            return;
+        }
+
+        if (state) {
+            searchFilters.add(target);
+        } else {
+            searchFilters.remove(target);
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                taskTreeModelWithFilter.setStateFilter(getEnabledFilters());
+            }
+        });
     }
 }

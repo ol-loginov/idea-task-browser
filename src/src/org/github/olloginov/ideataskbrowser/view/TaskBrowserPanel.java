@@ -11,11 +11,13 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserService;
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction;
 import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction;
 import org.github.olloginov.ideataskbrowser.actions.RefreshListAction;
+import org.github.olloginov.ideataskbrowser.actions.SetIssueFilterAction;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.util.TaskHelper;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -25,7 +27,7 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 
 public class TaskBrowserPanel {
-    private static final String TOOL_WINDOW_ID = "TaskBrowser";
+    public static final String TOOL_WINDOW_ID = "TaskBrowser";
 
     private JPanel root;
     private JSplitPane contentSplitter;
@@ -43,7 +45,7 @@ public class TaskBrowserPanel {
         tree.setCellRenderer(new TaskTreeRenderer());
 
         setTreeModel(new TaskTreeModel());
-        initToolbarActions();
+        initToolbarActions(browserService);
 
         tree.addMouseListener(new MouseAdapter() {
             @Override
@@ -60,11 +62,12 @@ public class TaskBrowserPanel {
         });
     }
 
-    private void initToolbarActions() {
+    private void initToolbarActions(TaskBrowserService browserService) {
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
         toolbarGroup.add(new RefreshListAction());
         toolbarGroup.add(new OpenInContextAction());
         toolbarGroup.add(new OpenInBrowserAction());
+        toolbarGroup.add(new SetIssueFilterAction(browserService.getProject(), browserService));
 
         final ActionManager actionManager = ActionManager.getInstance();
         final ActionToolbar toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false);
@@ -77,7 +80,7 @@ public class TaskBrowserPanel {
         return panel;
     }
 
-    public void setTreeModel(TaskTreeModel treeModel) {
+    public void setTreeModel(TreeModel treeModel) {
         this.tree.setModel(treeModel);
     }
 

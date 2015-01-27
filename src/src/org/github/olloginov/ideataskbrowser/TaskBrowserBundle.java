@@ -18,7 +18,7 @@ public class TaskBrowserBundle {
     }
 
     public static String message(@PropertyKey(resourceBundle = PATH_TO_BUNDLE) String key, Object... params) {
-        return CommonBundle.message(getBundle(), key, params);
+        return CommonBundle.messageOrDefault(getBundle(), key, key, params);
     }
 
     private static ResourceBundle getBundle() {

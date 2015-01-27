@@ -1,7 +1,6 @@
 package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.tasks.Task;
-import com.intellij.tasks.TaskState;
 import com.intellij.ui.ColoredTextContainer;
 import com.intellij.ui.SimpleTextAttributes;
 
@@ -15,11 +14,6 @@ public class TaskTreeNode extends DefaultMutableTreeNode implements CustomIcon, 
 
     public Task getTask() {
         return (Task) getUserObject();
-    }
-
-    private TaskState getTaskState() {
-        TaskState state = getTask().getState();
-        return state == null ? TaskState.OTHER : state;
     }
 
     @Override

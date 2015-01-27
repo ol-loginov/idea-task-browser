@@ -56,7 +56,6 @@ public class TaskTreeModel extends DefaultTreeModel {
         return (RootTreeNode) super.getRoot();
     }
 
-
     @Override
     public void insertNodeInto(MutableTreeNode newChild, MutableTreeNode parent, int index) {
         super.insertNodeInto(newChild, parent, index);
