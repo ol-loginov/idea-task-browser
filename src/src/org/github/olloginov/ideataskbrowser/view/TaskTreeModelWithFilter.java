@@ -59,7 +59,7 @@ public class TaskTreeModelWithFilter implements TreeModel {
 
             @Override
             public void treeNodesRemoved(TreeModelEvent e) {
-                throw new IllegalStateException("not implemented");
+                treeStructureChanged(e);
             }
 
             @Override
