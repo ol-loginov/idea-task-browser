@@ -155,7 +155,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         try {
             return ctx.repository.getIssues(fetchQuery, offset, limit, false, ctx.indicator);
         } catch (Exception e) {
-            throw new RepositoryException(TaskBrowserBundle.message("error.connection.broken"), e);
+            throw new RepositoryException(TaskBrowserBundle.message("error.connection.broken") + ": " + e.getMessage(), e);
         }
     }
 
