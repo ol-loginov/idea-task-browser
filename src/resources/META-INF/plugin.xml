@@ -1,9 +1,13 @@
 <idea-plugin version="2">
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.14</version>
+    <version>0.1.15</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.15 changes:
+<ul>
+    <li>Remove closed tasks after update</li>
+</ul>
 Version 0.1.14 changes:
 <ul>
     <li>IDEA ui style</li>
