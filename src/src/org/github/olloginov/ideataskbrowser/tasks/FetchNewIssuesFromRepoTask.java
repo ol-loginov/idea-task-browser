@@ -133,13 +133,16 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
 
         for (final com.intellij.tasks.Task task : tasks) {
-            int taskNodeIndex = getNode().findTaskNode(task);
-
+            final int taskNodeIndex = getNode().findTaskNode(task);
+            // if this is new task
             if (taskNodeIndex < 0) {
-                if(task.getState() == null && task.isClosed()){
+
+                // but we don't want to display closed tasks
+                if (task.isClosed()) {
                     continue;
                 }
 
+                // ok, proceed
                 ctx.addedCount++;
 
                 // node not found, but got place where insert
@@ -150,7 +153,20 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
                         searchNode.insertChild(insertAt, new TaskTreeNode(task));
                     }
                 });
-            } else {
+            }
+            // else for existing task if it's been closed
+            else if (task.isClosed()) {
+                //TODO: maybe here we should update and display ctx.removedCount
+                ctx.updatedCount++;
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchNode.removeChild(taskNodeIndex);
+                    }
+                });
+            }
+            // else for all existing task
+            else {
                 ctx.updatedCount++;
             }
         }
@@ -176,13 +192,18 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         for (int index = 0, length = getNode().getChildCount(); index < length; ++index) {
             ctx.indicator.setFraction(index / (float) length);
 
-            TaskTreeNode taskNode = getNode().getChildAt(index);
+            final TaskTreeNode taskNode = getNode().getChildAt(index);
             com.intellij.tasks.Task task = updateTask(ctx, taskNode.getTask());
             if (task == null) {
                 continue;
             }
             taskNode.setTask(task);
-            searchNode.updateChild(taskNode);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    searchNode.updateChild(taskNode);
+                }
+            });
         }
     }
 }
