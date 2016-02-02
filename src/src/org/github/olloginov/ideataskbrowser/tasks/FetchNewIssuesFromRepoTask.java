@@ -134,7 +134,12 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
 
         for (final com.intellij.tasks.Task task : tasks) {
             int taskNodeIndex = getNode().findTaskNode(task);
+
             if (taskNodeIndex < 0) {
+                if(task.getState() == null && task.isClosed()){
+                    continue;
+                }
+
                 ctx.addedCount++;
 
                 // node not found, but got place where insert
