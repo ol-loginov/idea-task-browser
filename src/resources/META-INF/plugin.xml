@@ -1,9 +1,13 @@
-<idea-plugin version="2">
+<idea-plugin>
     <name>wide-task-browser</name>
     <description>Displays complete task list</description>
-    <version>0.1.15</version>
+    <version>0.1.16</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.16 changes:
+<ul>
+    <li>Use non-modal update progress on startup</li>
+</ul>
 Version 0.1.15 changes:
 <ul>
     <li>Remove closed tasks after update</li>

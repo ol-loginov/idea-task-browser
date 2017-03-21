@@ -17,7 +17,7 @@ public abstract class TaskBrowser implements PersistentStateComponent<TaskBrowse
         return project == null ? null : project.getComponent(TaskBrowser.class);
     }
 
-    public abstract void importChanges();
+    public abstract void refresh();
 
     public abstract void reloadChanges();
 

@@ -1,5 +1,6 @@
 package org.github.olloginov.ideataskbrowser;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -9,11 +10,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.TaskState;
-import com.intellij.util.ui.UIUtil;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList;
 import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesTask;
-import org.github.olloginov.ideataskbrowser.tasks.ImportNewSearchesTask;
+import org.github.olloginov.ideataskbrowser.tasks.UpdateRepositoriesTask;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel;
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModelWithFilter;
@@ -74,7 +74,7 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
 
     @Override
     public void projectOpened() {
-        importChanges();
+        refresh();
     }
 
     @Override
@@ -108,19 +108,18 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
     }
 
     @Override
-    public void importChanges() {
-        UIUtil.invokeLaterIfNeeded(new Runnable() {
+    public void refresh() {
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
             public void run() {
-                ProgressManager.getInstance().run(new ImportNewSearchesTask(getProject(), searchList));
-                ProgressManager.getInstance().run(new FetchNewIssuesTask(getProject(), taskTreeModel));
+                ProgressManager.getInstance().run(new UpdateRepositoriesTask(getProject(), searchList, taskTreeModel));
             }
         });
     }
 
     @Override
     public void reloadChanges() {
-        UIUtil.invokeLaterIfNeeded(new Runnable() {
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
             public void run() {
                 taskTreeModelWithFilter.setStateFilter(getEnabledFilters());

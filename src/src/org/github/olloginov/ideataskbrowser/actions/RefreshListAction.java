@@ -18,7 +18,7 @@ public class RefreshListAction extends AnActionImpl {
     public void actionPerformed(AnActionEvent e) {
         TaskBrowser browser = TaskBrowser.getInstance(e.getProject());
         if (browser != null) {
-            browser.importChanges();
+            browser.refresh();
         }
     }
 }

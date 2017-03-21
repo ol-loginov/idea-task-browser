@@ -57,8 +57,6 @@ public class TaskBrowserServicePersister {
                 }
             }
         }
-
-        service.reloadChanges();
     }
 
     private void removeObsoleteSearches(TaskRepository[] repositories, TaskBrowserConfig config) {
