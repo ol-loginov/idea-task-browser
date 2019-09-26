@@ -106,7 +106,7 @@ public class TaskBrowserPanel {
         toolbarGroup.add(new RefreshListAction());
         toolbarGroup.add(new OpenInContextAction());
         toolbarGroup.add(new OpenInBrowserAction());
-        toolbarGroup.add(new SetIssueFilterAction(browserService.getProject(), browserService));
+        toolbarGroup.add(new SetIssueFilterAction(browserService));
 
         final ActionManager actionManager = ActionManager.getInstance();
         final ActionToolbar toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false);

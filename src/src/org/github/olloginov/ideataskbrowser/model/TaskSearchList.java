@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class TaskSearchList implements ListModel {
-    private List<TaskSearch> list = new ArrayList<TaskSearch>();
+    private List<TaskSearch> list = new ArrayList<>();
 
     private EventDispatcher<ListDataListener> dataDispatcher = EventDispatcher.create(ListDataListener.class);
 
@@ -84,7 +84,7 @@ public class TaskSearchList implements ListModel {
     }
 
     public void updateIcons(TaskManager taskManager) {
-        final Map<String, TaskRepository> repositoryMap = new TreeMap<String, TaskRepository>();
+        final Map<String, TaskRepository> repositoryMap = new TreeMap<>();
         for (TaskRepository r : taskManager.getAllRepositories()) {
             repositoryMap.put(r.getPresentableName(), r);
         }

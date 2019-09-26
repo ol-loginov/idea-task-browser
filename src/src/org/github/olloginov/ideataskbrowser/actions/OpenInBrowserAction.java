@@ -6,7 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
 
 public class OpenInBrowserAction extends AnActionImpl {
-    public static final String ID = "OpenInBrowser";
+    private static final String ID = "OpenInBrowser";
 
     public OpenInBrowserAction() {
         super(ID);

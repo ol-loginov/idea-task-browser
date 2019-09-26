@@ -27,7 +27,7 @@ public class TaskSearchTreeNode extends DefaultMutableTreeNode implements Custom
     }
 
     public int findTaskNode(Task task) {
-        String children[] = new String[getChildCount()];
+        String[] children = new String[getChildCount()];
         for (int i = 0; i < children.length; ++i) {
             children[i] = getChildAt(i).getTask().getId();
         }

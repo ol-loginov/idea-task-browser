@@ -1,6 +1,5 @@
 package org.github.olloginov.ideataskbrowser.tasks;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -22,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     private static final Logger logger = Logger.getInstance(FetchNewIssuesFromRepoTask.class);
 
-    public static final int FETCH_ISSUES_BUFFER_SIZE = 1024;
+    private static final int FETCH_ISSUES_BUFFER_SIZE = 1024;
 
     private final TreeNodeRef<TaskSearchTreeNode> searchNode;
     private final TaskBrowserNotifier notifier;
@@ -30,26 +29,26 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     public FetchNewIssuesFromRepoTask(@NotNull Project project, @NotNull TreeNodeRef<TaskSearchTreeNode> searchNode) {
         super(project, TaskBrowserBundle.message("FetchNewIssuesFromRepoTask.title", searchNode.getNode().getSearch().getRepository()), true);
         this.searchNode = searchNode;
-        this.notifier = ServiceManager.getService(myProject, TaskBrowserNotifier.class);
+        this.notifier = myProject.getComponent(TaskBrowserNotifier.class);
     }
 
 
-    public TaskSearchTreeNode getNode() {
+    private TaskSearchTreeNode getNode() {
         return searchNode.getNode();
     }
 
-    public TaskSearch getSearch() {
+    private TaskSearch getSearch() {
         return getNode().getSearch();
     }
 
     private static class FetchContext {
-        public ProgressIndicator indicator;
-        public TaskRepository repository;
+        ProgressIndicator indicator;
+        TaskRepository repository;
 
-        public int addedCount;
-        public int updatedCount;
+        int addedCount;
+        int updatedCount;
 
-        public boolean isAlive() {
+        boolean isAlive() {
             return repository != null;
         }
     }
@@ -92,7 +91,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
     }
 
-    public void importNew(FetchContext ctx) {
+    private void importNew(FetchContext ctx) {
         String title = TaskBrowserBundle.message("task.FetchNewIssuesTask.title", ctx.repository.getPresentableName());
         try {
             fetchAll(ctx);
@@ -172,7 +171,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
     }
 
-    public com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, int offset, int limit, String fetchQuery) throws RepositoryException {
+    private com.intellij.tasks.Task[] fetchChanges(FetchContext ctx, int offset, int limit, String fetchQuery) throws RepositoryException {
         try {
             return ctx.repository.getIssues(fetchQuery, offset, limit, false, ctx.indicator);
         } catch (Exception e) {
@@ -180,7 +179,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
         }
     }
 
-    public com.intellij.tasks.Task updateTask(FetchContext ctx, com.intellij.tasks.Task task) {
+    private com.intellij.tasks.Task updateTask(FetchContext ctx, com.intellij.tasks.Task task) {
         try {
             return ctx.repository.findTask(task.getId());
         } catch (Exception e) {

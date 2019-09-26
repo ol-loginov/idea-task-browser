@@ -6,7 +6,7 @@ import com.intellij.tasks.Task;
 import com.intellij.tasks.actions.OpenTaskDialog;
 
 public class OpenInContextAction extends AnActionImpl {
-    public static final String ID = "OpenInContext";
+    private static final String ID = "OpenInContext";
 
     public OpenInContextAction() {
         super(ID);

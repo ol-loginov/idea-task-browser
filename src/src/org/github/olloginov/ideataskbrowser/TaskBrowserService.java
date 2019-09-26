@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@State(name = "TaskBrowser", storages = @Storage(file = StoragePathMacros.WORKSPACE_FILE))
+@State(name = "TaskBrowser", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 public class TaskBrowserService extends TaskBrowser implements ProjectComponent, TaskBrowserServiceState {
     private final Project project;
 
     final TaskSearchList searchList = new TaskSearchList();
 
-    final List<TaskState> searchFilters = new ArrayList<TaskState>();
+    private final List<TaskState> searchFilters = new ArrayList<>();
     TaskBrowserConfig.DoubleClickAction doubleClickAction = TaskBrowserConfig.DoubleClickAction.NOTHING;
 
     private TaskTreeModel taskTreeModel;
@@ -87,7 +87,7 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
     }
 
     @Override
-    public void loadState(TaskBrowserConfig state) {
+    public void loadState(@NotNull TaskBrowserConfig state) {
         new TaskBrowserServicePersister(this).load(state);
     }
 
@@ -101,7 +101,7 @@ public class TaskBrowserService extends TaskBrowser implements ProjectComponent,
     @Override
     public Task getSelectedTask() {
         TreeNode node = taskTreePanel.getSelectedNode();
-        if (node != null && node instanceof TaskTreeNode) {
+        if (node instanceof TaskTreeNode) {
             return ((TaskTreeNode) node).getTask();
         }
         return null;

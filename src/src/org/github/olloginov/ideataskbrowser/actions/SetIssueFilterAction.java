@@ -1,25 +1,29 @@
 package org.github.olloginov.ideataskbrowser.actions;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
-import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskState;
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 import org.github.olloginov.ideataskbrowser.TaskBrowserServiceState;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-@SuppressWarnings("ComponentNotRegistered")
 public class SetIssueFilterAction extends AnAction implements CustomComponentAction {
-    private final Project project;
     private final TaskBrowserServiceState serviceState;
 
-    public SetIssueFilterAction(Project project, TaskBrowserServiceState serviceState) {
+    public SetIssueFilterAction(TaskBrowserServiceState serviceState) {
         super(TaskBrowserBundle.message("action.SetIssueFilterAction.description"), null, AllIcons.General.Filter);
-        this.project = project;
         this.serviceState = serviceState;
     }
 
@@ -34,14 +38,15 @@ public class SetIssueFilterAction extends AnAction implements CustomComponentAct
                 .show(button, button.getWidth(), 0);
     }
 
+    @NotNull
     @Override
-    public JComponent createCustomComponent(Presentation presentation) {
+    public JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
         ActionButton button = new ActionButton(this, presentation, TaskBrowserPanel.TOOL_WINDOW_ID, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE);
         presentation.putClientProperty("button", button);
         return button;
     }
 
-    public static DefaultActionGroup createPopupActionGroup(TaskBrowserServiceState serviceState) {
+    private static DefaultActionGroup createPopupActionGroup(TaskBrowserServiceState serviceState) {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new TaskFilterApplier(TaskBrowserBundle.message("stateFilter.NA"), TaskBrowserBundle.message("stateFilter.NA.description"), null, serviceState));
         group.addSeparator();
@@ -66,12 +71,12 @@ public class SetIssueFilterAction extends AnAction implements CustomComponentAct
         }
 
         @Override
-        public boolean isSelected(AnActionEvent e) {
+        public boolean isSelected(@NotNull AnActionEvent e) {
             return serviceState.isFilterEnabled(taskState);
         }
 
         @Override
-        public void setSelected(AnActionEvent e, boolean state) {
+        public void setSelected(@NotNull AnActionEvent e, boolean state) {
             serviceState.setFilterEnabled(taskState, state);
         }
     }

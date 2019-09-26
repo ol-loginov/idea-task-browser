@@ -23,7 +23,7 @@ public class FetchNewIssuesTask extends Task.Backgroundable {
     public void run(@NotNull ProgressIndicator indicator) {
         TaskTreeModel.RootTreeNode rootTreeNode = treeModel.getRoot();
         for (int index = 0; index < rootTreeNode.getChildCount(); ++index) {
-            final TreeNodeRef<TaskSearchTreeNode> target = new TreeNodeRef<TaskSearchTreeNode>(treeModel, rootTreeNode.getChildAt(index));
+            final TreeNodeRef<TaskSearchTreeNode> target = new TreeNodeRef<>(treeModel, rootTreeNode.getChildAt(index));
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 @Override
                 public void run() {

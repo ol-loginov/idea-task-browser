@@ -1,6 +1,5 @@
 package org.github.olloginov.ideataskbrowser.config;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -89,12 +88,12 @@ public class TaskBrowserConfigEditor implements SearchableConfigurable {
     }
 
     private TaskBrowserConfig getServiceConfig() {
-        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
+        TaskBrowser taskBrowser = project.getComponent(TaskBrowser.class);
         return taskBrowser == null ? new TaskBrowserConfig() : taskBrowser.getState();
     }
 
     private void setServiceConfig(TaskBrowserConfig serviceConfig) {
-        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
+        TaskBrowser taskBrowser = project.getComponent(TaskBrowser.class);
         if (taskBrowser == null) return;
         taskBrowser.loadState(serviceConfig);
     }

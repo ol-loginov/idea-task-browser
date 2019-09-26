@@ -1,9 +1,14 @@
 <idea-plugin>
     <name>wide-task-browser</name>
-    <description>Displays complete task list</description>
-    <version>0.1.16</version>
+    <description>Displays complete task list from configured task sources</description>
+    <version>0.1.17</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.17 changes:
+<ul>
+    <li>Fix for https://github.com/ol-loginov/idea-task-browser/issues/18</li>
+    <li>Logo added (part of icon made by SmashIcons from www.flaticon.com)</li>
+</ul>
 Version 0.1.16 changes:
 <ul>
     <li>Use non-modal update progress on startup</li>
@@ -55,7 +60,7 @@ Version 0.1.6 changes:
 </ul>
 ]]></change-notes>
 
-    <idea-version since-build="139.658"/>
+    <idea-version since-build="192"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.tasks</depends>
@@ -69,7 +74,6 @@ Version 0.1.6 changes:
         <component>
             <interface-class>org.github.olloginov.ideataskbrowser.TaskBrowser</interface-class>
             <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserService</implementation-class>
-            <skipForDefaultProject>true</skipForDefaultProject>
         </component>
     </project-components>
 
