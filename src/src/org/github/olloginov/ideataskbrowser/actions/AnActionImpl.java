@@ -7,6 +7,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.tasks.Task;
 import org.github.olloginov.ideataskbrowser.TaskBrowser;
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
+import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow;
 
 import javax.swing.*;
 
@@ -23,10 +24,6 @@ public abstract class AnActionImpl extends AnAction {
 
     protected boolean isEnabled(Project project) {
         return false;
-    }
-
-    Task getSelectedTask(Project project) {
-        return project == null ? null : project.getComponent(TaskBrowser.class).getSelectedTask();
     }
 
     private static Icon resolveIcon(String key) {

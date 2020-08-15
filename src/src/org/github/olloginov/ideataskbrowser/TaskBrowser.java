@@ -1,32 +1,14 @@
 package org.github.olloginov.ideataskbrowser;
 
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.tasks.Task;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.tree.TreeModel;
 
-public abstract class TaskBrowser implements PersistentStateComponent<TaskBrowserConfig> {
-    public static final String COMPONENT_NAME = "Task Browser";
+public interface TaskBrowser extends TaskBrowserServiceState, PersistentStateComponent<TaskBrowserConfig> {
+    void refresh();
 
-    @Nullable
-    public static TaskBrowser getInstance(Project project) {
-        return project == null ? null : project.getComponent(TaskBrowser.class);
-    }
+    void reloadChanges();
 
-    public abstract void refresh();
-
-    public abstract void reloadChanges();
-
-    @Nullable
-    public abstract Task getSelectedTask();
-
-    @NotNull
-    public abstract Project getProject();
-
-    @NotNull
-    public abstract JComponent getPanel();
+    TreeModel getFilteredModel();
 }

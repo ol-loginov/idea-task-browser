@@ -1,5 +1,6 @@
 package org.github.olloginov.ideataskbrowser.config;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -30,7 +31,7 @@ public class TaskBrowserConfigEditor implements SearchableConfigurable {
     @NotNull
     @Override
     public String getId() {
-        return TaskBrowser.COMPONENT_NAME;
+        return TaskBrowserConfigEditor.class.getTypeName();
     }
 
     @Nullable
@@ -88,14 +89,15 @@ public class TaskBrowserConfigEditor implements SearchableConfigurable {
     }
 
     private TaskBrowserConfig getServiceConfig() {
-        TaskBrowser taskBrowser = project.getComponent(TaskBrowser.class);
+        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
         return taskBrowser == null ? new TaskBrowserConfig() : taskBrowser.getState();
     }
 
     private void setServiceConfig(TaskBrowserConfig serviceConfig) {
-        TaskBrowser taskBrowser = project.getComponent(TaskBrowser.class);
-        if (taskBrowser == null) return;
-        taskBrowser.loadState(serviceConfig);
+        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
+        if (taskBrowser != null) {
+            taskBrowser.loadState(serviceConfig);
+        }
     }
 
     private TaskBrowserConfig getFormConfig() {
@@ -178,9 +180,7 @@ public class TaskBrowserConfigEditor implements SearchableConfigurable {
         }
     }
 
-    /**
-     * @noinspection ALL
-     */
+    @SuppressWarnings("unused")
     public JComponent $$$getRootComponent$$$() {
         return panel;
     }

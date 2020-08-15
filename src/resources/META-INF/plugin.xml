@@ -1,9 +1,14 @@
 <idea-plugin>
-    <name>wide-task-browser</name>
+    <name>Wide Task Browser</name>
     <description>Displays complete task list from configured task sources</description>
-    <version>0.1.17</version>
+    <version>0.1.18</version>
     <vendor>ol-loginov</vendor>
     <change-notes><![CDATA[
+Version 0.1.18 changes:
+<ul>
+    <li>Change toolwindow icon</li>
+    <li>Migration from project components to project services</li>
+</ul>
 Version 0.1.17 changes:
 <ul>
     <li>Fix for https://github.com/ol-loginov/idea-task-browser/issues/18</li>
@@ -60,26 +65,21 @@ Version 0.1.6 changes:
 </ul>
 ]]></change-notes>
 
-    <idea-version since-build="192"/>
+    <idea-version since-build="201"/>
 
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.tasks</depends>
 
     <resource-bundle>org.github.olloginov.ideataskbrowser.TaskBrowserBundle</resource-bundle>
 
-    <project-components>
-        <component>
-            <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserNotifier</implementation-class>
-        </component>
-        <component>
-            <interface-class>org.github.olloginov.ideataskbrowser.TaskBrowser</interface-class>
-            <implementation-class>org.github.olloginov.ideataskbrowser.TaskBrowserService</implementation-class>
-        </component>
-    </project-components>
-
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="TaskBrowser" anchor="bottom" icon="/general/moreTabs.png" factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
+        <projectService serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserImpl" serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowser"/>
+        <applicationService serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserNotifierImpl" serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowserNotifier"/>
+
+        <toolWindow id="TaskBrowser" anchor="bottom" icon="/org/github/olloginov/ideataskbrowser/toolwindow.png" factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
 
         <projectConfigurable instance="org.github.olloginov.ideataskbrowser.config.TaskBrowserConfigEditor" nonDefaultProject="true"/>
+
+        <backgroundPostStartupActivity implementation="org.github.olloginov.ideataskbrowser.TaskBrowserPostStartupActivity"/>
     </extensions>
 </idea-plugin>

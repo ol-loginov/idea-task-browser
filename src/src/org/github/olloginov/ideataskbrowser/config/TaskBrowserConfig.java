@@ -10,15 +10,15 @@ import java.util.List;
 public class TaskBrowserConfig {
     @Property
     @XCollection(elementName = "search")
-    public List<TaskSearch> searches = new ArrayList<TaskSearch>();
+    public List<TaskSearch> searches = new ArrayList<>();
     @Property
     @XCollection(elementName = "filters")
-    public List<String> filters= new ArrayList<String>();
+    public List<String> filters = new ArrayList<>();
 
     @Property
     public DoubleClickAction doubleClickAction = DoubleClickAction.NOTHING;
 
-    public static enum DoubleClickAction {
+    public enum DoubleClickAction {
         NOTHING,
         SWITCH_CONTEXT,
         OPEN_IN_BROWSER

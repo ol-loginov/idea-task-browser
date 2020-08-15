@@ -11,7 +11,10 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.tasks.TaskState;
+import org.github.olloginov.ideataskbrowser.TaskBrowser;
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle;
 import org.github.olloginov.ideataskbrowser.TaskBrowserServiceState;
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel;
@@ -20,18 +23,21 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 
 public class SetIssueFilterAction extends AnAction implements CustomComponentAction {
-    private final TaskBrowserServiceState serviceState;
+//    private final TaskBrowserServiceState serviceState;
 
-    public SetIssueFilterAction(TaskBrowserServiceState serviceState) {
+    public SetIssueFilterAction() {
         super(TaskBrowserBundle.message("action.SetIssueFilterAction.description"), null, AllIcons.General.Filter);
-        this.serviceState = serviceState;
     }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         Presentation presentation = e.getPresentation();
         JComponent button = (JComponent) presentation.getClientProperty("button");
-        DefaultActionGroup group = createPopupActionGroup(serviceState);
+        if (button == null) {
+            return;
+        }
+
+        DefaultActionGroup group = createPopupActionGroup(e.getProject());
         ActionManager.getInstance()
                 .createActionPopupMenu(ActionPlaces.TODO_VIEW_TOOLBAR, group)
                 .getComponent()
@@ -46,15 +52,16 @@ public class SetIssueFilterAction extends AnAction implements CustomComponentAct
         return button;
     }
 
-    private static DefaultActionGroup createPopupActionGroup(TaskBrowserServiceState serviceState) {
+    private static DefaultActionGroup createPopupActionGroup(Project project) {
+        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
         DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new TaskFilterApplier(TaskBrowserBundle.message("stateFilter.NA"), TaskBrowserBundle.message("stateFilter.NA.description"), null, serviceState));
+        group.add(new TaskFilterApplier(TaskBrowserBundle.message("stateFilter.NA"), TaskBrowserBundle.message("stateFilter.NA.description"), null, taskBrowser));
         group.addSeparator();
         for (TaskState filterState : TaskState.values()) {
             group.add(new TaskFilterApplier(
                     TaskBrowserBundle.message("stateFilter." + filterState.name()),
                     TaskBrowserBundle.message("stateFilter." + filterState.name() + ".description"),
-                    filterState, serviceState));
+                    filterState, taskBrowser));
         }
         return group;
     }

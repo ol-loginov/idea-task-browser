@@ -9,14 +9,14 @@ import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class TaskSearchList implements ListModel {
-    private List<TaskSearch> list = new ArrayList<>();
-
-    private EventDispatcher<ListDataListener> dataDispatcher = EventDispatcher.create(ListDataListener.class);
+public class TaskSearchList implements ListModel<TaskSearch> {
+    private final List<TaskSearch> list = new ArrayList<>();
+    private final EventDispatcher<ListDataListener> dataDispatcher = EventDispatcher.create(ListDataListener.class);
 
     public void clear() {
         int lastSize = getSize();
@@ -24,6 +24,10 @@ public class TaskSearchList implements ListModel {
             list.clear();
             dataDispatcher.getMulticaster().intervalRemoved(new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, 0, lastSize - 1));
         }
+    }
+
+    public List<TaskSearch> getInnerList() {
+        return Collections.unmodifiableList(list);
     }
 
     @Override
@@ -89,16 +93,13 @@ public class TaskSearchList implements ListModel {
             repositoryMap.put(r.getPresentableName(), r);
         }
 
-        updateAll(new Convertor<TaskSearch, TaskSearch>() {
-            @Override
-            public TaskSearch convert(TaskSearch o) {
-                TaskRepository repository = repositoryMap.get(o.getRepository());
-                if (repository == null) {
-                    return null;
-                }
-                o.setIcon(repository.getRepositoryType().getIcon());
-                return o;
+        updateAll(o -> {
+            TaskRepository repository = repositoryMap.get(o.getRepository());
+            if (repository == null) {
+                return null;
             }
+            o.setIcon(repository.getRepositoryType().getIcon());
+            return o;
         });
     }
 }

@@ -4,37 +4,43 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
+import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow;
+import org.jetbrains.annotations.NotNull;
 
 public class OpenInBrowserAction extends AnActionImpl {
     private static final String ID = "OpenInBrowser";
 
-    public OpenInBrowserAction() {
+    private final TaskBrowserToolWindow toolWindow;
+
+    public OpenInBrowserAction(TaskBrowserToolWindow toolWindow) {
         super(ID);
+        this.toolWindow = toolWindow;
     }
 
     @Override
     protected boolean isEnabled(Project project) {
-        return getIssueUrl(project) != null;
+        return getIssueUrl() != null;
     }
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        String taskUrl = getIssueUrl(e.getProject());
+    public void actionPerformed(@NotNull AnActionEvent e) {
+        String taskUrl = getIssueUrl();
         if (taskUrl != null) {
             BrowserUtil.browse(taskUrl);
         }
     }
 
-    private String getIssueUrl(Project project) {
-        if (project != null) {
-            Task task = getSelectedTask(project);
-            if (task != null) {
-                String taskUrl = task.getIssueUrl();
-                if (taskUrl != null && taskUrl.length() > 0) {
-                    return taskUrl;
-                }
-            }
+    private String getIssueUrl() {
+        Task task = toolWindow.getSelectedTask();
+        if (task == null) {
+            return null;
         }
+
+        String taskUrl = task.getIssueUrl();
+        if (taskUrl != null && taskUrl.length() > 0) {
+            return taskUrl;
+        }
+
         return null;
     }
 }

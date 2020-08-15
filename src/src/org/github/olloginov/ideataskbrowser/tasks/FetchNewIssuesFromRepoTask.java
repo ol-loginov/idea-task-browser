@@ -1,5 +1,6 @@
 package org.github.olloginov.ideataskbrowser.tasks;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -29,9 +30,8 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
     public FetchNewIssuesFromRepoTask(@NotNull Project project, @NotNull TreeNodeRef<TaskSearchTreeNode> searchNode) {
         super(project, TaskBrowserBundle.message("FetchNewIssuesFromRepoTask.title", searchNode.getNode().getSearch().getRepository()), true);
         this.searchNode = searchNode;
-        this.notifier = myProject.getComponent(TaskBrowserNotifier.class);
+        this.notifier = ServiceManager.getService(TaskBrowserNotifier.class);
     }
-
 
     private TaskSearchTreeNode getNode() {
         return searchNode.getNode();
@@ -146,23 +146,13 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
 
                 // node not found, but got place where insert
                 final int insertAt = -(taskNodeIndex + 1);
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        searchNode.insertChild(insertAt, new TaskTreeNode(task));
-                    }
-                });
+                SwingUtilities.invokeAndWait(() -> searchNode.insertChild(insertAt, new TaskTreeNode(task)));
             }
             // else for existing task if it's been closed
             else if (task.isClosed()) {
                 //TODO: maybe here we should update and display ctx.removedCount
                 ctx.updatedCount++;
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        searchNode.removeChild(taskNodeIndex);
-                    }
-                });
+                SwingUtilities.invokeAndWait(() -> searchNode.removeChild(taskNodeIndex));
             }
             // else for all existing task
             else {
@@ -189,6 +179,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
 
     private void updateCurrent(FetchContext ctx) {
         for (int index = 0, length = getNode().getChildCount(); index < length; ++index) {
+            ctx.indicator.setIndeterminate(false);
             ctx.indicator.setFraction(index / (float) length);
 
             final TaskTreeNode taskNode = getNode().getChildAt(index);
@@ -197,12 +188,7 @@ public class FetchNewIssuesFromRepoTask extends Task.Backgroundable {
                 continue;
             }
             taskNode.setTask(task);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    searchNode.updateChild(taskNode);
-                }
-            });
+            SwingUtilities.invokeLater(() -> searchNode.updateChild(taskNode));
         }
     }
 }

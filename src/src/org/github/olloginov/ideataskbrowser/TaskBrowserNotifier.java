@@ -5,24 +5,22 @@ import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.notification.NotificationsConfiguration;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.project.Project;
 
-public class TaskBrowserNotifier implements ProjectComponent {
-    private static final String NOTIFICATION_GROUP = "Task Browser";
-    private final Project project;
+public interface TaskBrowserNotifier {
+    String NOTIFICATION_GROUP = "Task Browser";
 
-    public TaskBrowserNotifier(Project project) {
-        this.project = project;
-    }
+    void error(String title, String text);
 
-    @Override
-    public void initComponent() {
+    void info(String title, String text);
+}
+
+class TaskBrowserNotifierImpl implements TaskBrowserNotifier {
+    public TaskBrowserNotifierImpl() {
         NotificationsConfiguration.getNotificationsConfiguration().register(NOTIFICATION_GROUP, NotificationDisplayType.BALLOON, true);
     }
 
     private void notify(String title, String message, NotificationType messageType) {
-        Notifications.Bus.notify(new Notification(NOTIFICATION_GROUP, title, message, messageType), project);
+        Notifications.Bus.notify(new Notification(NOTIFICATION_GROUP, title, message, messageType));
     }
 
     public void error(String title, String text) {

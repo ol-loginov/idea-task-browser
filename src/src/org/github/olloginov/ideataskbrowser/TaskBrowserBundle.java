@@ -1,6 +1,6 @@
 package org.github.olloginov.ideataskbrowser;
 
-import com.intellij.CommonBundle;
+import com.intellij.AbstractBundle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.PropertyKey;
 
@@ -18,7 +18,7 @@ public class TaskBrowserBundle {
     }
 
     public static String message(@PropertyKey(resourceBundle = PATH_TO_BUNDLE) String key, Object... params) {
-        return CommonBundle.messageOrDefault(getBundle(), key, key, params);
+        return AbstractBundle.messageOrDefault(getBundle(), key, key, params);
     }
 
     private static ResourceBundle getBundle() {

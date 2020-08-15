@@ -2,21 +2,24 @@ package org.github.olloginov.ideataskbrowser.view;
 
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
 import com.intellij.tasks.Comment;
 import com.intellij.tasks.Task;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.treeStructure.Tree;
-import org.github.olloginov.ideataskbrowser.TaskBrowserService;
+import org.github.olloginov.ideataskbrowser.TaskBrowser;
+import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow;
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction;
 import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction;
 import org.github.olloginov.ideataskbrowser.actions.RefreshListAction;
 import org.github.olloginov.ideataskbrowser.actions.SetIssueFilterAction;
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig;
 import org.github.olloginov.ideataskbrowser.util.TaskHelper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
@@ -29,14 +32,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 
-public class TaskBrowserPanel {
+public class TaskBrowserPanel implements TaskBrowserToolWindow {
     public static final String TOOL_WINDOW_ID = "TaskBrowser";
 
     private JPanel root;
     private Tree tree;
     private JEditorPane previewHtml;
 
-    public TaskBrowserPanel(final TaskBrowserService browserService) {
+    public TaskBrowserPanel(@NotNull Project project) {
         initComponent();
 
         previewHtml.setEditorKit(new HTMLEditorKit());
@@ -45,7 +48,7 @@ public class TaskBrowserPanel {
         tree.setCellRenderer(new TaskTreeRenderer());
 
         setTreeModel(new TaskTreeModel());
-        initToolbarActions(browserService);
+        initToolbarActions();
 
         tree.addMouseListener(new MouseAdapter() {
             @Override
@@ -54,9 +57,9 @@ public class TaskBrowserPanel {
                     return;
                 }
                 if (e.getClickCount() == 1) {
-                    listenTreeSingleClick(browserService);
+                    listenTreeSingleClick();
                 } else {
-                    listenTreeDoubleClick(browserService, e);
+                    listenTreeDoubleClick(project, e);
                 }
             }
         });
@@ -101,12 +104,12 @@ public class TaskBrowserPanel {
         root.add(contentSplitter, BorderLayout.CENTER);
     }
 
-    private void initToolbarActions(TaskBrowserService browserService) {
+    private void initToolbarActions() {
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
         toolbarGroup.add(new RefreshListAction());
-        toolbarGroup.add(new OpenInContextAction());
-        toolbarGroup.add(new OpenInBrowserAction());
-        toolbarGroup.add(new SetIssueFilterAction(browserService));
+        toolbarGroup.add(new OpenInContextAction(this));
+        toolbarGroup.add(new OpenInBrowserAction(this));
+        toolbarGroup.add(new SetIssueFilterAction());
 
         final ActionManager actionManager = ActionManager.getInstance();
         final ActionToolbar toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false);
@@ -141,8 +144,17 @@ public class TaskBrowserPanel {
                 .replaceAll("<script", "&lt;script");
     }
 
-    private void listenTreeSingleClick(TaskBrowserService browserService) {
-        Task task = browserService.getSelectedTask();
+    @Override
+    public Task getSelectedTask() {
+        TreeNode node = getSelectedNode();
+        if (node instanceof TaskTreeNode) {
+            return ((TaskTreeNode) node).getTask();
+        }
+        return null;
+    }
+
+    private void listenTreeSingleClick() {
+        Task task = getSelectedTask();
         if (task == null) {
             return;
         }
@@ -165,24 +177,23 @@ public class TaskBrowserPanel {
         previewHtml.setText(html.toString());
     }
 
-    private void listenTreeDoubleClick(final TaskBrowserService browserService, MouseEvent e) {
-        TaskBrowserConfig config = browserService.getState();
-        if (config == null) return;
-
-        AnAction action;
-        switch (config.doubleClickAction) {
-            case SWITCH_CONTEXT:
-                action = new OpenInContextAction();
-                break;
-            case OPEN_IN_BROWSER:
-                action = new OpenInBrowserAction();
-                break;
-            default:
-                action = null;
+    private void listenTreeDoubleClick(@NotNull Project project, @NotNull MouseEvent e) {
+        TaskBrowser taskBrowser = ServiceManager.getService(project, TaskBrowser.class);
+        if (taskBrowser == null) {
+            return;
+        }
+        TaskBrowserConfig config = taskBrowser.getState();
+        if (config == null) {
+            return;
         }
 
-        if (action != null) {
-            ActionManager.getInstance().tryToExecute(action, e, tree, null, true);
+        switch (config.doubleClickAction) {
+            case SWITCH_CONTEXT:
+                ActionManager.getInstance().tryToExecute(new OpenInContextAction(this), e, tree, null, true);
+                break;
+            case OPEN_IN_BROWSER:
+                ActionManager.getInstance().tryToExecute(new OpenInBrowserAction(this), e, tree, null, true);
+                break;
         }
     }
 }

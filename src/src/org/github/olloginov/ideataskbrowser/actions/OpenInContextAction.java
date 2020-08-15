@@ -4,32 +4,35 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.tasks.Task;
 import com.intellij.tasks.actions.OpenTaskDialog;
+import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow;
 
 public class OpenInContextAction extends AnActionImpl {
     private static final String ID = "OpenInContext";
 
-    public OpenInContextAction() {
+    private final TaskBrowserToolWindow toolWindow;
+
+    public OpenInContextAction(TaskBrowserToolWindow toolWindow) {
         super(ID);
+        this.toolWindow = toolWindow;
     }
 
     @Override
     protected boolean isEnabled(Project project) {
-        return getSelectedTask(project) != null;
+        return toolWindow.getSelectedTask() != null;
     }
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
-        if (project != null) {
-            activateLocalTask(project);
+        if (project == null) {
+            return;
         }
-    }
 
-    private void activateLocalTask(Project project) {
-        Task task = getSelectedTask(project);
+        Task task = toolWindow.getSelectedTask();
         if (task == null) {
             return;
         }
-        new OpenTaskDialog(project, task).show();
+
+        new OpenTaskDialog(e.getProject(), task).show();
     }
 }
