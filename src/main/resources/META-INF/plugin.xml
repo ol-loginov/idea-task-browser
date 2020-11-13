@@ -1,0 +1,27 @@
+<idea-plugin>
+    <id>wide-task-browser</id>
+    <name>Wide Task Browser</name>
+    <version>0.1.18</version>
+    <vendor>ol-loginov</vendor>
+
+    <idea-version since-build="202.7319.50"/>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.tasks</depends>
+
+    <resource-bundle>messages.TaskBrowserBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserImpl" serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowser"/>
+        <applicationService serviceImplementation="org.github.olloginov.ideataskbrowser.TaskBrowserNotifierImpl" serviceInterface="org.github.olloginov.ideataskbrowser.TaskBrowserNotifier"/>
+
+        <toolWindow id="TaskBrowser" anchor="bottom" icon="/icons/toolwindow.png" factoryClass="org.github.olloginov.ideataskbrowser.ToolWindowFactory"/>
+
+        <projectConfigurable instance="org.github.olloginov.ideataskbrowser.config.TaskBrowserConfigEditor" nonDefaultProject="true"/>
+
+        <colorAndFontDescriptorProvider implementation="org.github.olloginov.ideataskbrowser.config.TaskBrowserColors"/>
+        <colorAndFontPanelFactory implementation="org.github.olloginov.ideataskbrowser.config.TaskBrowserColors"/>
+
+        <backgroundPostStartupActivity implementation="org.github.olloginov.ideataskbrowser.TaskBrowserPostStartupActivity"/>
+    </extensions>
+</idea-plugin>
