@@ -19,12 +19,12 @@ class TaskSearchTreeNode(search: TaskSearch) : DefaultMutableTreeNode(search), C
 	}
 
 	fun findTaskNode(task: Task): Int {
-		val children = 0.rangeTo(childCount)
+		val children = 0.until(childCount)
 			.map { getChildAt(it) }
 			.map { it.getTask() }
 			.map { it.id }
 			.toTypedArray()
-		return Arrays.binarySearch(children, task.id, { a, b -> a.compareTo(b) })
+		return Arrays.binarySearch(children, task.id) { a, b -> a.compareTo(b) }
 	}
 
 	override fun getChildAt(index: Int): TaskTreeNode {

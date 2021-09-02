@@ -10,6 +10,7 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserBundle
 import org.github.olloginov.ideataskbrowser.model.TaskSearch
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel
+import org.github.olloginov.ideataskbrowser.view.TaskSearchTreeNode
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode
 import java.awt.BorderLayout
@@ -43,7 +44,9 @@ class TaskBrowserColorsPreviewPanel : PreviewPanel {
 
 			val treeModel = TaskTreeModel(repositories)
 			for (child in treeModel.root.children()) {
-				val task = LocalTaskImpl("", "Issue Title")
+				val repoNode = child as TaskSearchTreeNode
+
+				val task = LocalTaskImpl("", "${repoNode.getSearch().getRepository()} Issue")
 				task.type = randomTaskType()
 				treeModel.insertNodeInto(TaskTreeNode(task), child as MutableTreeNode, 0);
 			}

@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.14.2")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -82,6 +82,7 @@ tasks {
     listOf("compileKotlin", "compileTestKotlin").forEach {
         getByName<KotlinCompile>(it) {
             kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.apiVersion = "1.3"
         }
     }
 
@@ -108,7 +109,11 @@ tasks {
         })
 
         // Get the latest available change notes from the changelog file
-        changeNotes.set(provider { changelog.getUnreleased().toHTML() })
+        changeNotes.set(provider {
+            changelog.getAll()
+                .entries
+                .joinToString("<!--sep-->") { "\n<h2><strong>Version ${it.key}</strong></h2> ${it.value.toHTML()}<hr>" }
+        })
     }
 
     runPluginVerifier {
@@ -118,10 +123,11 @@ tasks {
     publishPlugin {
         dependsOn("patchChangelog")
         token.set(System.getenv("PUBLISH_TOKEN"))
+
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
         // https://jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html#specifying-a-release-channel
-        channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
+//        channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
     }
 }
 

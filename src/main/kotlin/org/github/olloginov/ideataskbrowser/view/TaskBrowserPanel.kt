@@ -16,8 +16,8 @@ import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction
 import org.github.olloginov.ideataskbrowser.actions.OpenInContextAction
 import org.github.olloginov.ideataskbrowser.actions.RefreshListAction
 import org.github.olloginov.ideataskbrowser.actions.SetIssueFilterAction
-import org.github.olloginov.ideataskbrowser.config.TaskBrowserColors
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig
+import org.github.olloginov.ideataskbrowser.config.TaskBrowserTheme
 import org.github.olloginov.ideataskbrowser.util.TaskHelper
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
@@ -193,6 +193,6 @@ class TaskBrowserPanel(
 	}
 
 	fun setColorScheme(scheme: EditorColorsScheme) {
-		tree.background = scheme.getColor(TaskBrowserColors.TASK_TREE_BACKGROUND_COLOR)
+		tree.background = scheme.getColor(TaskBrowserTheme.TASK_TREE_BACKGROUND_COLOR)
 	}
 }
