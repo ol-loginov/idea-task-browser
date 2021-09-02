@@ -2,6 +2,13 @@
 
 # Changelog
 
+## [1.0.0]
+### Added
+- Tool window colors are configurable in theme
+
+### Fixed
+- Gitlab Issues
+
 ## [0.1.18]
 ### Added
 - New toolwindow icon

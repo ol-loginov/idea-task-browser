@@ -1,9 +1,14 @@
 package org.github.olloginov.ideataskbrowser.view
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.editor.colors.EditorColorsListener
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
+import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.tasks.Task
@@ -47,12 +52,13 @@ private fun htmlSafe(text: String?): String {
 
 class TaskBrowserPanel(
 	private val project: Project? = null
-) : TaskBrowserToolWindow {
+) : TaskBrowserToolWindow, Disposable {
 	companion object {
 		const val TOOL_WINDOW_ID = "TaskBrowser"
 	}
 
-	private val previewHtml: JEditorPane = JEditorPane()
+	private val taskHtml: JEditorPane = JEditorPane()
+
 	private val tree: Tree = Tree()
 	val root: JPanel = JPanel()
 
@@ -61,7 +67,8 @@ class TaskBrowserPanel(
 	init {
 		initComponent()
 
-		previewHtml.editorKit = HTMLEditorKit()
+		taskHtml.editorKit = HTMLEditorKit()
+		taskHtml.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true)
 
 		tree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
 		tree.cellRenderer = TaskTreeRenderer()
@@ -81,18 +88,27 @@ class TaskBrowserPanel(
 				}
 			}
 		})
+
+		setColorScheme(EditorColorsUtil.getGlobalOrDefaultColorScheme())
+
+		ApplicationManager.getApplication().messageBus.connect().subscribe(EditorColorsManager.TOPIC, EditorColorsListener {
+			setColorScheme(EditorColorsUtil.getGlobalOrDefaultColorScheme())
+		})
+	}
+
+	override fun dispose() {
 	}
 
 	private fun initComponent() {
-		previewHtml.border = BorderFactory.createEmptyBorder()
-		previewHtml.contentType = "text/html"
-		previewHtml.isEditable = false
+		taskHtml.border = BorderFactory.createEmptyBorder()
+		taskHtml.contentType = "text/html"
+		taskHtml.isEditable = false
 
 		val scrollPane1 = ScrollPaneFactory.createScrollPane()
 		scrollPane1.border = null
 		scrollPane1.background = UIManager.getColor("EditorPane.selectionForeground")
 		scrollPane1.foreground = UIManager.getColor("EditorPane.background")
-		scrollPane1.setViewportView(previewHtml)
+		scrollPane1.setViewportView(taskHtml)
 
 		val preview = JPanel()
 		preview.layout = BorderLayout(10, 10)
@@ -173,7 +189,7 @@ class TaskBrowserPanel(
 		}
 
 		html.append("</body></html>")
-		previewHtml.text = html.toString()
+		taskHtml.text = html.toString()
 	}
 
 	private fun listenTreeDoubleClick(e: MouseEvent) {
@@ -193,6 +209,10 @@ class TaskBrowserPanel(
 	}
 
 	fun setColorScheme(scheme: EditorColorsScheme) {
-		tree.background = scheme.getColor(TaskBrowserTheme.TASK_TREE_BACKGROUND_COLOR)
+		tree.background = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_BACKGROUND_COLOR)
+		tree.foreground = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_FOREGROUND_COLOR)
+
+		taskHtml.background = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_BACKGROUND_COLOR)
+		taskHtml.foreground = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_FOREGROUND_COLOR)
 	}
 }
