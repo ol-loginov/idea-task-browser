@@ -4,8 +4,7 @@ import com.intellij.tasks.Task
 import com.intellij.ui.ColoredTextContainer
 import com.intellij.ui.SimpleTextAttributes
 import org.github.olloginov.ideataskbrowser.model.TaskSearch
-import org.github.olloginov.ideataskbrowser.util.TaskHelper
-import java.util.*
+import java.util.Arrays
 import javax.swing.Icon
 import javax.swing.tree.DefaultMutableTreeNode
 
@@ -15,7 +14,7 @@ class TaskSearchTreeNode(search: TaskSearch) : DefaultMutableTreeNode(search), C
 	}
 
 	override fun toString(): String {
-		return String.format("%s", getSearch().getRepository())
+		return getSearch().getRepository()
 	}
 
 	fun findTaskNode(task: Task): Int {
@@ -29,20 +28,6 @@ class TaskSearchTreeNode(search: TaskSearch) : DefaultMutableTreeNode(search), C
 
 	override fun getChildAt(index: Int): TaskTreeNode {
 		return super.getChildAt(index) as TaskTreeNode
-	}
-
-	fun getLatestTaskDate(): Date? {
-		var date: Date? = null
-
-		for (index in childCount - 1 downTo 0) {
-			val taskNode = getChildAt(index)
-			val taskChange = TaskHelper.getChangeDate(taskNode.getTask()) ?: continue
-
-			if (date == null || taskChange.after(date)) {
-				date = taskChange
-			}
-		}
-		return date
 	}
 
 	override fun getIcon(): Icon? {

@@ -26,13 +26,15 @@ private fun randomTaskType(): TaskType {
 	return enumValues[RANDOM.nextInt(enumValues.size)]
 }
 
+private const val PREVIEW_PANEL_PADDING = 10
+
 class TaskBrowserColorsPreviewPanel : PreviewPanel {
 	private var container: JPanel? = null
 	private var panel: TaskBrowserPanel? = null
 
 	override fun getPanel(): Component {
 		val panel = this.panel ?: TaskBrowserPanel(null).also {
-			it.root.border = BorderFactory.createEmptyBorder(10, 0, 10, 10)
+			it.root.border = BorderFactory.createEmptyBorder(PREVIEW_PANEL_PADDING, 0, PREVIEW_PANEL_PADDING, PREVIEW_PANEL_PADDING)
 
 			val repositories = TaskSearchList()
 			TaskRepositoryType.getRepositoryTypes()
@@ -48,7 +50,7 @@ class TaskBrowserColorsPreviewPanel : PreviewPanel {
 
 				val task = LocalTaskImpl("", "${repoNode.getSearch().getRepository()} Issue")
 				task.type = randomTaskType()
-				treeModel.insertNodeInto(TaskTreeNode(task), child as MutableTreeNode, 0);
+				treeModel.insertNodeInto(TaskTreeNode(task), child as MutableTreeNode, 0)
 			}
 			it.setTreeModel(treeModel)
 
@@ -67,8 +69,7 @@ class TaskBrowserColorsPreviewPanel : PreviewPanel {
 		panel = null
 	}
 
-	override fun updateView() {
-	}
+	override fun updateView() = Unit
 
 	fun setColorScheme(scheme: EditorColorsScheme?) {
 		val panel = this.panel ?: return
@@ -77,9 +78,7 @@ class TaskBrowserColorsPreviewPanel : PreviewPanel {
 		}
 	}
 
-	override fun blinkSelectedHighlightType(selected: Any?) {
-	}
+	override fun blinkSelectedHighlightType(selected: Any?) = Unit
 
-	override fun addListener(listener: ColorAndFontSettingsListener) {
-	}
+	override fun addListener(listener: ColorAndFontSettingsListener) = Unit
 }

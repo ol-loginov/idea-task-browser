@@ -66,19 +66,23 @@ class TaskTreeModelWithFilter(
 
 	override fun getChild(parent: Any, index: Int): Any {
 		if (parent is TaskSearchTreeNode) {
-			var lookupIndex = index
-			for (i in 0 until parent.childCount) {
-				val taskNode = parent.getChildAt(i)
-				if (isNodeVisible(taskNode)) {
-					if (lookupIndex == 0) {
-						return taskNode
-					}
-					--lookupIndex
-				}
-			}
-			throw IllegalStateException("node not found")
+			return getChild(parent, index)
 		}
 		return model.getChild(parent, index)
+	}
+
+	private fun getChild(parent: TaskSearchTreeNode, index: Int): Any {
+		var lookupIndex = index
+		for (i in 0 until parent.childCount) {
+			val taskNode = parent.getChildAt(i)
+			if (isNodeVisible(taskNode)) {
+				if (lookupIndex == 0) {
+					return taskNode
+				}
+				--lookupIndex
+			}
+		}
+		throw IllegalStateException("node not found")
 	}
 
 	private fun isNodeVisible(child: Any): Boolean {
@@ -114,19 +118,23 @@ class TaskTreeModelWithFilter(
 
 	override fun getIndexOfChild(parent: Any, child: Any): Int {
 		if (parent is TaskSearchTreeNode) {
-			var index = 0
-			for (i in 0 until parent.childCount) {
-				val taskNode = parent.getChildAt(i)
-				if (isNodeVisible(taskNode)) {
-					if (taskNode == child) {
-						return index
-					}
-					++index
-				}
-			}
-			throw IllegalStateException("node not found")
+			return getIndexOfChild(parent, child)
 		}
 		return model.getIndexOfChild(parent, child)
+	}
+
+	private fun getIndexOfChild(parent: TaskSearchTreeNode, child: Any): Int {
+		var index = 0
+		for (i in 0 until parent.childCount) {
+			val taskNode = parent.getChildAt(i)
+			if (isNodeVisible(taskNode)) {
+				if (taskNode == child) {
+					return index
+				}
+				++index
+			}
+		}
+		throw IllegalStateException("node not found")
 	}
 
 	override fun addTreeModelListener(l: TreeModelListener) {

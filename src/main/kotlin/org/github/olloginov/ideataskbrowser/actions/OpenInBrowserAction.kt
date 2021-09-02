@@ -23,13 +23,8 @@ class OpenInBrowserAction(
 	}
 
 	private fun getIssueUrl(): String? {
-		val task = toolWindow.getSelectedTask() ?: return null
-
-		val taskUrl = task.issueUrl
-		if (taskUrl != null && taskUrl.isNotEmpty()) {
-			return taskUrl
-		}
-
-		return null
+		return toolWindow.getSelectedTask()
+			?.issueUrl
+			?.takeIf { it.isNotEmpty() }
 	}
 }

@@ -5,4 +5,19 @@ formatting:
   Indentation:
     continuationIndentSize: 8
   ParameterListWrapping:
-    indentSize: 8
+    active: false
+  MaximumLineLength:
+    maxLineLength: 180
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+complexity:
+  TooManyFunctions:
+    active: false
+
+style:
+  MaxLineLength:
+    maxLineLength: 180
+

@@ -1,7 +1,7 @@
 package org.github.olloginov.ideataskbrowser.util
 
 import com.intellij.tasks.Task
-import java.util.*
+import java.util.Date
 
 object TaskHelper {
 	fun getChangeDate(task: Task): Date? {

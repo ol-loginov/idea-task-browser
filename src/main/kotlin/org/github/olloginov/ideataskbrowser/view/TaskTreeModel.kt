@@ -33,8 +33,7 @@ class TaskTreeModel(
 				})
 			}
 
-			override fun contentsChanged(e: ListDataEvent) {
-			}
+			override fun contentsChanged(e: ListDataEvent) = Unit
 		})
 	}
 

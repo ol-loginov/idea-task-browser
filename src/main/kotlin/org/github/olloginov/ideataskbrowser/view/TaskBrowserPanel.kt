@@ -1,6 +1,5 @@
 package org.github.olloginov.ideataskbrowser.view
 
-import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
@@ -31,16 +30,17 @@ import java.text.DateFormat
 import javax.swing.BorderFactory
 import javax.swing.JEditorPane
 import javax.swing.JPanel
-import javax.swing.UIManager
 import javax.swing.text.html.HTMLEditorKit
 import javax.swing.tree.TreeModel
 import javax.swing.tree.TreeNode
 import javax.swing.tree.TreeSelectionModel
 
+const val PREVIEW_PADDING = 10
+const val PREVIEW_SPLIT = .5f
+
 private fun htmlBreak(text: String?): String {
 	if (text == null) return ""
-	return text
-		.replace("(\\r\\n|\\r|\\n)", "<br>")
+	return text.replace("(\\r\\n|\\r|\\n)", "<br>")
 }
 
 private fun htmlSafe(text: String?): String {
@@ -52,7 +52,7 @@ private fun htmlSafe(text: String?): String {
 
 class TaskBrowserPanel(
 	private val project: Project? = null
-) : TaskBrowserToolWindow, Disposable {
+) : TaskBrowserToolWindow {
 	companion object {
 		const val TOOL_WINDOW_ID = "TaskBrowser"
 	}
@@ -62,13 +62,14 @@ class TaskBrowserPanel(
 	private val tree: Tree = Tree()
 	val root: JPanel = JPanel()
 
-	val noop = project == null
+	private val noop = project == null
 
 	init {
 		initComponent()
 
 		taskHtml.editorKit = HTMLEditorKit()
 		taskHtml.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true)
+		setPreviewHtml("")
 
 		tree.selectionModel.selectionMode = TreeSelectionModel.SINGLE_TREE_SELECTION
 		tree.cellRenderer = TaskTreeRenderer()
@@ -96,23 +97,17 @@ class TaskBrowserPanel(
 		})
 	}
 
-	override fun dispose() {
-	}
-
 	private fun initComponent() {
-		taskHtml.border = BorderFactory.createEmptyBorder()
+		taskHtml.border = null
 		taskHtml.contentType = "text/html"
 		taskHtml.isEditable = false
 
 		val scrollPane1 = ScrollPaneFactory.createScrollPane()
-		scrollPane1.border = null
-		scrollPane1.background = UIManager.getColor("EditorPane.selectionForeground")
-		scrollPane1.foreground = UIManager.getColor("EditorPane.background")
+		scrollPane1.border = BorderFactory.createEmptyBorder()
 		scrollPane1.setViewportView(taskHtml)
 
 		val preview = JPanel()
-		preview.layout = BorderLayout(10, 10)
-		preview.background = UIManager.getColor("EditorPane.background")
+		preview.layout = BorderLayout(PREVIEW_PADDING, PREVIEW_PADDING)
 		preview.add(scrollPane1, BorderLayout.CENTER)
 
 		tree.border = null
@@ -120,13 +115,13 @@ class TaskBrowserPanel(
 		tree.showsRootHandles = true
 
 		val treeScroll = ScrollPaneFactory.createScrollPane()
-		treeScroll.border = null
+		treeScroll.border = BorderFactory.createEmptyBorder()
 		treeScroll.setViewportView(tree)
 
 		val contentSplitter = JBSplitter()
 		contentSplitter.border = null
 		contentSplitter.orientation = false
-		contentSplitter.proportion = .5f
+		contentSplitter.proportion = PREVIEW_SPLIT
 		contentSplitter.firstComponent = treeScroll
 		contentSplitter.secondComponent = preview
 
@@ -174,36 +169,44 @@ class TaskBrowserPanel(
 		val task = getSelectedTask() ?: return
 
 		val df = DateFormat.getDateTimeInstance()
-		var dateString = ""
-		if (TaskHelper.getChangeDate(task) != null) {
-			dateString = df.format(TaskHelper.getChangeDate(task))
-		}
 
-		val html = StringBuilder("<html><body style='padding: 5px;'>")
-			.append(String.format("<small>%s</small><br>", dateString))
-			.append(String.format("<b>%s</b><br><br>", htmlSafe(task.presentableName)))
-			.append(String.format("<p>%s</p><br><br><br>", if (task.description == null) "" else htmlBreak(task.description)))
+		val html = StringBuilder(
+			"""
+			<html><body style='padding: 5px;'>
+			<small>${if (TaskHelper.getChangeDate(task) != null) df.format(TaskHelper.getChangeDate(task)) else ""}</small><br>
+			<b>${htmlSafe(task.presentableName)}</b><br><br>
+			<p>${htmlBreak(task.description ?: "")}</p><br><br><br>
+		"""
+		)
 
 		task.comments.forEach { comment ->
-			html.append(String.format("<b>%s</b> <small>%s</small><br>%s<br>", df.format(comment.date), htmlSafe(comment.author), comment.text))
+			html.append(
+				"""
+				<b>${df.format(comment.date)}</b><small>${htmlSafe(comment.author)}</small><br>
+				 	${comment.text}<br>
+			"""
+			)
 		}
 
 		html.append("</body></html>")
-		taskHtml.text = html.toString()
+
+		setPreviewHtml(html.toString())
+	}
+
+	private fun setPreviewHtml(html: String) {
+		taskHtml.text = html
 	}
 
 	private fun listenTreeDoubleClick(e: MouseEvent) {
-		if (project == null) {
-			return
-		}
+		if (project != null) {
+			val taskBrowser = ServiceManager.getService(project, TaskBrowser::class.java) ?: return
+			val config = taskBrowser.state ?: return
 
-		val taskBrowser = ServiceManager.getService(project, TaskBrowser::class.java) ?: return
-		val config = taskBrowser.state ?: return
-
-		when (config.doubleClickAction) {
-			TaskBrowserConfig.DoubleClickAction.SWITCH_CONTEXT -> ActionManager.getInstance().tryToExecute(OpenInContextAction(this, noop), e, tree, null, true)
-			TaskBrowserConfig.DoubleClickAction.OPEN_IN_BROWSER -> ActionManager.getInstance().tryToExecute(OpenInBrowserAction(this, noop), e, tree, null, true)
-			else -> {
+			when (config.doubleClickAction) {
+				TaskBrowserConfig.DoubleClickAction.SWITCH_CONTEXT -> ActionManager.getInstance().tryToExecute(OpenInContextAction(this, noop), e, tree, null, true)
+				TaskBrowserConfig.DoubleClickAction.OPEN_IN_BROWSER -> ActionManager.getInstance().tryToExecute(OpenInBrowserAction(this, noop), e, tree, null, true)
+				else -> {
+				}
 			}
 		}
 	}

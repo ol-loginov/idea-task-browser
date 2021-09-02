@@ -1,6 +1,10 @@
 package org.github.olloginov.ideataskbrowser
 
-import com.intellij.notification.*
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationDisplayType
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
+import com.intellij.notification.NotificationsConfiguration
 
 const val NOTIFICATION_GROUP: String = "Task Browser"
 

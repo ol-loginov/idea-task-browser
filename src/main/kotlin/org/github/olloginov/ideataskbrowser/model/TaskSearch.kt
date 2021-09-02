@@ -2,7 +2,7 @@ package org.github.olloginov.ideataskbrowser.model
 
 import com.intellij.util.xmlb.annotations.Tag
 import com.intellij.util.xmlb.annotations.Transient
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.Icon
 

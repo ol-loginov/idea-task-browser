@@ -1,6 +1,11 @@
 package org.github.olloginov.ideataskbrowser.config
 
-import com.intellij.application.options.colors.*
+import com.intellij.application.options.colors.ColorAndFontOptions
+import com.intellij.application.options.colors.ColorAndFontPanelFactory
+import com.intellij.application.options.colors.ColorAndFontSettingsListener
+import com.intellij.application.options.colors.NewColorAndFontPanel
+import com.intellij.application.options.colors.OptionsPanelImpl
+import com.intellij.application.options.colors.SchemesPanel
 import com.intellij.openapi.editor.colors.ColorKey
 import com.intellij.openapi.editor.colors.EditorSchemeAttributeDescriptor
 import com.intellij.openapi.options.colors.AttributesDescriptor

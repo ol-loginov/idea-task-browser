@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.project.Project
 import com.intellij.tasks.TaskManager
@@ -12,16 +13,19 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig
 import org.github.olloginov.ideataskbrowser.model.TaskSearch
 import org.github.olloginov.ideataskbrowser.model.TaskSearchList
+import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesFromRepoTask
 import org.github.olloginov.ideataskbrowser.tasks.FetchNewIssuesTask
 import org.github.olloginov.ideataskbrowser.tasks.UpdateRepositoriesTask
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModelWithFilter
-import java.util.*
+import java.util.Collections
 import javax.swing.SwingUtilities
 import javax.swing.tree.TreeModel
 
+private val logger = Logger.getInstance(FetchNewIssuesFromRepoTask::class.java)
+
 private fun isDiffer(a: TaskSearchList, b: Iterable<TaskSearch>): Boolean {
-	val stringer = { v: TaskSearch -> String.format("%s:%s", v.getRepository(), v.getQuery()) }
+	val stringer = { v: TaskSearch -> "${v.getRepository()}:${v.getQuery()}" }
 	val listStringer = { list: Iterable<TaskSearch> -> list.joinToString("\n", transform = stringer) }
 	return listStringer(a.getInnerList()) != listStringer(b)
 }
@@ -89,7 +93,7 @@ class TaskBrowserImpl(
 				try {
 					setFilterEnabled(TaskState.valueOf(filter), true)
 				} catch (e: IllegalArgumentException) {
-					// just ignore wrong value
+					logger.error(e)
 				}
 			}
 		}
