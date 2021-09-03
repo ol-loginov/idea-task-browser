@@ -8,15 +8,17 @@ plugins {
     id("java")
     // Kotlin support
     id("org.jetbrains.kotlin.jvm") version "1.3.71"
-    // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-    id("org.jetbrains.intellij") version "1.1.4"
-    // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-    id("org.jetbrains.changelog") version "1.2.1"
     // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
     id("io.gitlab.arturbosch.detekt") version "1.18.1"
+    // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+    id("org.jetbrains.changelog") version "1.2.1"
     // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
+    id("org.jetbrains.intellij") version "1.1.4"
 }
+
+logging.captureStandardOutput(LogLevel.INFO)
 
 // Import variables from gradle.properties file
 val pluginGroup: String by project
@@ -39,7 +41,6 @@ version = pluginVersion
 // Configure project's dependencies
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -49,9 +50,12 @@ dependencies {
 // Configure gradle-intellij-plugin plugin.
 // Read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    pluginName.set(pluginName_)
-    version.set(platformVersion)
     type.set(platformType)
+    version.set(platformVersion)
+
+    println(">>> intellij version = ${type.get()} ${getVersionNumber()}")
+
+    pluginName.set(pluginName_)
     downloadSources.set(platformDownloadSources.toBoolean())
     updateSinceUntilBuild.set(false)
 

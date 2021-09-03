@@ -14,6 +14,7 @@ import com.intellij.tasks.Task
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.util.ui.UIUtil
 import org.github.olloginov.ideataskbrowser.TaskBrowser
 import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction
@@ -212,10 +213,10 @@ class TaskBrowserPanel(
 	}
 
 	fun setColorScheme(scheme: EditorColorsScheme) {
-		tree.background = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_BACKGROUND_COLOR)
-		tree.foreground = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_FOREGROUND_COLOR)
+		tree.background = scheme.getColor(TaskBrowserTheme.WTB_TREE_BACKGROUND_COLOR) ?: UIUtil.getTreeBackground()
+		tree.foreground = scheme.getColor(TaskBrowserTheme.WTB_TREE_FOREGROUND_COLOR) ?: UIUtil.getTreeForeground()
 
-		taskHtml.background = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_BACKGROUND_COLOR)
-		taskHtml.foreground = scheme.getColor(TaskBrowserTheme.WTB_PANE_CONTENT_FOREGROUND_COLOR)
+		taskHtml.background = scheme.getColor(TaskBrowserTheme.WTB_PREVIEW_BACKGROUND_COLOR) ?: UIUtil.getTextFieldBackground()
+		taskHtml.foreground = scheme.getColor(TaskBrowserTheme.WTB_PREVIEW_FOREGROUND_COLOR) ?: UIUtil.getTextFieldForeground()
 	}
 }

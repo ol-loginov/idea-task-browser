@@ -14,8 +14,10 @@ import com.intellij.openapi.options.colors.ColorDescriptor
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle
 
 object TaskBrowserTheme {
-	var WTB_PANE_CONTENT_BACKGROUND_COLOR = ColorKey.createColorKey("WTB_PANE_CONTENT_BACKGROUND_COLOR")
-	var WTB_PANE_CONTENT_FOREGROUND_COLOR = ColorKey.createColorKey("WTB_PANE_CONTENT_FOREGROUND_COLOR")
+	var WTB_TREE_BACKGROUND_COLOR = ColorKey.createColorKey("WTB_TREE_BACKGROUND_COLOR")
+	var WTB_TREE_FOREGROUND_COLOR = ColorKey.createColorKey("WTB_TREE_FOREGROUND_COLOR")
+	var WTB_PREVIEW_BACKGROUND_COLOR = ColorKey.createColorKey("WTB_PREVIEW_BACKGROUND_COLOR")
+	var WTB_PREVIEW_FOREGROUND_COLOR = ColorKey.createColorKey("WTB_PREVIEW_FOREGROUND_COLOR")
 
 	fun sectionGroup(): String = TaskBrowserBundle.message("settings.sectionName")
 }
@@ -28,8 +30,10 @@ class TaskBrowserColors : ColorAndFontPanelFactory, ColorAndFontDescriptorsProvi
 	override fun getAttributeDescriptors(): Array<AttributesDescriptor> = emptyArray()
 
 	override fun getColorDescriptors(): Array<ColorDescriptor> = arrayOf(
-		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.contentBackground"), TaskBrowserTheme.WTB_PANE_CONTENT_BACKGROUND_COLOR, ColorDescriptor.Kind.BACKGROUND),
-		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.contentForeground"), TaskBrowserTheme.WTB_PANE_CONTENT_FOREGROUND_COLOR, ColorDescriptor.Kind.FOREGROUND)
+		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.treeBackground"), TaskBrowserTheme.WTB_TREE_BACKGROUND_COLOR, ColorDescriptor.Kind.BACKGROUND),
+		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.treeForeground"), TaskBrowserTheme.WTB_TREE_FOREGROUND_COLOR, ColorDescriptor.Kind.FOREGROUND),
+		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.previewBackground"), TaskBrowserTheme.WTB_PREVIEW_BACKGROUND_COLOR, ColorDescriptor.Kind.BACKGROUND),
+		ColorDescriptor(TaskBrowserBundle.message("options.colors.descriptor.previewForeground"), TaskBrowserTheme.WTB_PREVIEW_FOREGROUND_COLOR, ColorDescriptor.Kind.FOREGROUND)
 	)
 
 	override fun getPanelDisplayName(): String {
