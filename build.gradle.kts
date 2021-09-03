@@ -45,7 +45,7 @@ intellij {
     type.set(properties("platformType"))
     version.set(platformVersion)
 
-    println(">>> intellij version = ${type.get()} ${getVersionNumber()}")
+    println("platform version = ${type.get()} ${getVersionNumber()}")
 
     pluginName.set(properties("pluginName"))
     downloadSources.set(platformDownloadSources.toBoolean())
@@ -69,18 +69,17 @@ detekt {
 }
 
 tasks {
-    // Set the compatibility versions to 1.8
     withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
 
     withType<Detekt> {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     patchPluginXml {
