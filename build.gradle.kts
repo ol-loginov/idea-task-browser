@@ -26,9 +26,6 @@ val pluginGroup: String by project
 // Read more about the issue: https://github.com/JetBrains/intellij-platform-plugin-template/issues/29
 val pluginName_: String by project
 val pluginVersion: String by project
-val pluginSinceBuild: String by project
-val pluginUntilBuild: String by project
-val pluginVerifierIdeVersions: String by project
 
 val platformType: String by project
 val platformVersion: String by project
@@ -96,8 +93,7 @@ tasks {
 
     patchPluginXml {
         version.set(pluginVersion)
-        sinceBuild.set(pluginSinceBuild)
-//        untilBuild(pluginUntilBuild)
+        sinceBuild.set(platformVersion)
 
         // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
         pluginDescription.set(
@@ -125,7 +121,7 @@ tasks {
     }
 
     runPluginVerifier {
-        ideVersions.add(pluginVerifierIdeVersions)
+        ideVersions.add(platformVersion)
     }
 
     publishPlugin {
