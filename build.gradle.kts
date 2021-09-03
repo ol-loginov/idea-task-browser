@@ -112,11 +112,7 @@ tasks {
 
         // Get the latest available change notes from the changelog file
         changeNotes.set(
-            provider {
-                changelog.getAll()
-                    .entries
-                    .joinToString("<!--sep-->") { "<p><h2>Version ${it.key}</h2></p><p>${it.value.toHTML()}</p>" }
-            }
+            provider { changelog.getLatest().toHTML() }
         )
     }
 
@@ -130,8 +126,10 @@ tasks {
 
         // pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
         // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
-        // https://jetbrains.org/intellij/sdk/docs/tutorials/build_system/deployment.html#specifying-a-release-channel
-//        channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
+        // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
+
+        // ALWAYS DOWNLOADS EAP VERSION IF I UNCOMMENT THIS LINE
+        //        channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
 }
 
