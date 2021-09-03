@@ -9,15 +9,15 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.3.71"
-    // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
-    id("io.gitlab.arturbosch.detekt") version "1.18.1"
-    // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-    id("org.jetbrains.changelog") version "1.2.1"
-    // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.jetbrains.kotlin.jvm") version "1.5.10"
     // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-    id("org.jetbrains.intellij") version "1.1.4"
+    id("org.jetbrains.intellij") version "1.0"
+    // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+    id("org.jetbrains.changelog") version "1.1.2"
+    // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
+    // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
+    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 logging.captureStandardOutput(LogLevel.INFO)
@@ -37,7 +37,7 @@ repositories {
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.18.1")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.17.1")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -76,11 +76,8 @@ tasks {
         targetCompatibility = "1.8"
     }
 
-    listOf("compileKotlin", "compileTestKotlin").forEach {
-        getByName<KotlinCompile>(it) {
-            kotlinOptions.jvmTarget = "1.8"
-            kotlinOptions.apiVersion = "1.3"
-        }
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
     }
 
     withType<Detekt> {
@@ -130,10 +127,6 @@ tasks {
 }
 
 changelog {
-    path.set("${project.projectDir}/CHANGELOG.md")
-    header.set(provider { "[${version.get()}] - ${date()}" })
-    itemPrefix.set("-")
-    keepUnreleasedSection.set(true)
-    unreleasedTerm.set("[Unreleased]")
-    groups.set(listOf("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"))
+    version = properties(pluginVersion)
+    groups = emptyList()
 }
