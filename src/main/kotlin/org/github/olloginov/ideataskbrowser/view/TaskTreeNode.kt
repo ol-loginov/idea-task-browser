@@ -7,17 +7,17 @@ import javax.swing.Icon
 import javax.swing.tree.DefaultMutableTreeNode
 
 class TaskTreeNode(task: Task) : DefaultMutableTreeNode(task), CustomIcon, CustomLabel {
-	fun getTask(): Task = getUserObject() as Task
+    fun getTask(): Task = getUserObject() as Task
 
-	override fun getIcon(): Icon = getTask().icon
+    override fun getIcon(): Icon = getTask().icon
 
-	override fun toString(): String = getTask().presentableName
+    override fun toString(): String = getTask().presentableName
 
-	fun setTask(task: Task) {
-		setUserObject(task)
-	}
+    fun setTask(task: Task) {
+        setUserObject(task)
+    }
 
-	override fun setLabel(coloredTextContainer: ColoredTextContainer) {
-		coloredTextContainer.append(getTask().toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
-	}
+    override fun setLabel(coloredTextContainer: ColoredTextContainer) {
+        coloredTextContainer.append(getTask().toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
+    }
 }

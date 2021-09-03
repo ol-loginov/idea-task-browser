@@ -7,7 +7,7 @@ formatting:
   ParameterListWrapping:
     active: false
   MaximumLineLength:
-    maxLineLength: 180
+    maxLineLength: 200
 
 exceptions:
   TooGenericExceptionCaught:
@@ -19,5 +19,5 @@ complexity:
 
 style:
   MaxLineLength:
-    maxLineLength: 180
+    maxLineLength: 200
 

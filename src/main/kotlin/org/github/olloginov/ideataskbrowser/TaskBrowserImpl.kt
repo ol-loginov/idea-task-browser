@@ -25,111 +25,111 @@ import javax.swing.tree.TreeModel
 private val logger = Logger.getInstance(FetchNewIssuesFromRepoTask::class.java)
 
 private fun isDiffer(a: TaskSearchList, b: Iterable<TaskSearch>): Boolean {
-	val stringer = { v: TaskSearch -> "${v.getRepository()}:${v.getQuery()}" }
-	val listStringer = { list: Iterable<TaskSearch> -> list.joinToString("\n", transform = stringer) }
-	return listStringer(a.getInnerList()) != listStringer(b)
+    val stringer = { v: TaskSearch -> "${v.getRepository()}:${v.getQuery()}" }
+    val listStringer = { list: Iterable<TaskSearch> -> list.joinToString("\n", transform = stringer) }
+    return listStringer(a.getInnerList()) != listStringer(b)
 }
 
 @State(name = "TaskBrowser", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class TaskBrowserImpl(
-	private val project: Project
+    private val project: Project
 ) : TaskBrowser, TaskBrowserServiceState {
 
-	private val searchList = TaskSearchList()
+    private val searchList = TaskSearchList()
 
-	private val searchFilters = mutableListOf<TaskState?>()
-	private var doubleClickAction = TaskBrowserConfig.DoubleClickAction.NOTHING
+    private val searchFilters = mutableListOf<TaskState?>()
+    private var doubleClickAction = TaskBrowserConfig.DoubleClickAction.NOTHING
 
-	private val taskTreeModel = TaskTreeModel(searchList)
-	private val taskTreeModelWithFilter = TaskTreeModelWithFilter(taskTreeModel, getEnabledFilters())
+    private val taskTreeModel = TaskTreeModel(searchList)
+    private val taskTreeModelWithFilter = TaskTreeModelWithFilter(taskTreeModel, getEnabledFilters())
 
-	override fun getFilteredModel(): TreeModel {
-		return taskTreeModelWithFilter
-	}
+    override fun getFilteredModel(): TreeModel {
+        return taskTreeModelWithFilter
+    }
 
-	@Override
-	override fun getState(): TaskBrowserConfig {
-		val config = TaskBrowserConfig()
-		config.doubleClickAction = doubleClickAction
+    @Override
+    override fun getState(): TaskBrowserConfig {
+        val config = TaskBrowserConfig()
+        config.doubleClickAction = doubleClickAction
 
-		for (index in 0 until searchList.size) {
-			config.searches.add(searchList.getElementAt(index))
-		}
+        for (index in 0 until searchList.size) {
+            config.searches.add(searchList.getElementAt(index))
+        }
 
-		getEnabledFilters().forEach { filter: TaskState? ->
-			config.filters.add(filter?.name ?: "")
-		}
-		return config
-	}
+        getEnabledFilters().forEach { filter: TaskState? ->
+            config.filters.add(filter?.name ?: "")
+        }
+        return config
+    }
 
-	@Override
-	override fun loadState(state: TaskBrowserConfig) {
-		val taskManager = TaskManager.getManager(project)
-		val repositories = taskManager.allRepositories
+    @Override
+    override fun loadState(state: TaskBrowserConfig) {
+        val taskManager = TaskManager.getManager(project)
+        val repositories = taskManager.allRepositories
 
-		val config = TaskBrowserConfig()
-		XmlSerializerUtil.copyBean(state, config)
+        val config = TaskBrowserConfig()
+        XmlSerializerUtil.copyBean(state, config)
 
-		// remove obsolete searches
-		config.searches.removeIf { search ->
-			repositories.none { repository -> search.getRepository() == repository.presentableName }
-		}
+        // remove obsolete searches
+        config.searches.removeIf { search ->
+            repositories.none { repository -> search.getRepository() == repository.presentableName }
+        }
 
-		if (isDiffer(searchList, config.searches)) {
-			searchList.clear()
+        if (isDiffer(searchList, config.searches)) {
+            searchList.clear()
 
-			config.searches.forEach { search ->
-				searchList.add(search)
-			}
-			searchList.updateIcons(taskManager)
-		}
+            config.searches.forEach { search ->
+                searchList.add(search)
+            }
+            searchList.updateIcons(taskManager)
+        }
 
-		doubleClickAction = config.doubleClickAction
+        doubleClickAction = config.doubleClickAction
 
-		config.filters.forEach { filter ->
-			if (filter.isEmpty()) {
-				setFilterEnabled(null, true)
-			} else {
-				try {
-					setFilterEnabled(TaskState.valueOf(filter), true)
-				} catch (e: IllegalArgumentException) {
-					logger.error(e)
-				}
-			}
-		}
-	}
+        config.filters.forEach { filter ->
+            if (filter.isEmpty()) {
+                setFilterEnabled(null, true)
+            } else {
+                try {
+                    setFilterEnabled(TaskState.valueOf(filter), true)
+                } catch (e: IllegalArgumentException) {
+                    logger.error(e)
+                }
+            }
+        }
+    }
 
-	override fun refresh() {
-		ApplicationManager.getApplication().runReadAction {
-			ProgressManager.getInstance().run(UpdateRepositoriesTask(project, searchList, taskTreeModel))
-		}
-	}
+    override fun refresh() {
+        ApplicationManager.getApplication().runReadAction {
+            ProgressManager.getInstance().run(UpdateRepositoriesTask(project, searchList, taskTreeModel))
+        }
+    }
 
-	override fun reloadChanges() {
-		ApplicationManager.getApplication().runReadAction {
-			taskTreeModelWithFilter.setStateFilter(getEnabledFilters())
-			ProgressManager.getInstance().run(FetchNewIssuesTask(project, taskTreeModel))
-		}
-	}
+    override fun reloadChanges() {
+        ApplicationManager.getApplication().runReadAction {
+            taskTreeModelWithFilter.setStateFilter(getEnabledFilters())
+            ProgressManager.getInstance().run(FetchNewIssuesTask(project, taskTreeModel))
+        }
+    }
 
-	private fun getEnabledFilters(): List<TaskState?> = Collections.unmodifiableList(searchFilters)
+    private fun getEnabledFilters(): List<TaskState?> = Collections.unmodifiableList(searchFilters)
 
-	override fun isFilterEnabled(target: TaskState?): Boolean = searchFilters.contains(target)
+    override fun isFilterEnabled(target: TaskState?): Boolean = searchFilters.contains(target)
 
-	override fun setFilterEnabled(target: TaskState?, state: Boolean) {
-		val enabled = isFilterEnabled(target)
-		if (enabled == state) {
-			return
-		}
+    override fun setFilterEnabled(target: TaskState?, state: Boolean) {
+        val enabled = isFilterEnabled(target)
+        if (enabled == state) {
+            return
+        }
 
-		if (state) {
-			searchFilters.add(target)
-		} else {
-			searchFilters.remove(target)
-		}
+        if (state) {
+            searchFilters.add(target)
+        } else {
+            searchFilters.remove(target)
+        }
 
-		SwingUtilities.invokeLater {
-			taskTreeModelWithFilter.setStateFilter(getEnabledFilters())
-		}
-	}
+        SwingUtilities.invokeLater {
+            taskTreeModelWithFilter.setStateFilter(getEnabledFilters())
+        }
+    }
 }

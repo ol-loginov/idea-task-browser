@@ -6,9 +6,9 @@ import org.github.olloginov.ideataskbrowser.config.TaskBrowserConfig
 import javax.swing.tree.TreeModel
 
 interface TaskBrowser : TaskBrowserServiceState, PersistentStateComponent<TaskBrowserConfig> {
-	fun refresh()
+    fun refresh()
 
-	fun reloadChanges()
+    fun reloadChanges()
 
-	fun getFilteredModel(): TreeModel
+    fun getFilteredModel(): TreeModel
 }

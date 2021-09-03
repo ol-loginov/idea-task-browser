@@ -9,32 +9,32 @@ import javax.swing.Icon
 import javax.swing.tree.DefaultMutableTreeNode
 
 class TaskSearchTreeNode(search: TaskSearch) : DefaultMutableTreeNode(search), CustomIcon, CustomLabel {
-	fun getSearch(): TaskSearch {
-		return getUserObject() as TaskSearch
-	}
+    fun getSearch(): TaskSearch {
+        return getUserObject() as TaskSearch
+    }
 
-	override fun toString(): String {
-		return getSearch().getRepository()
-	}
+    override fun toString(): String {
+        return getSearch().getRepository()
+    }
 
-	fun findTaskNode(task: Task): Int {
-		val children = 0.until(childCount)
-			.map { getChildAt(it) }
-			.map { it.getTask() }
-			.map { it.id }
-			.toTypedArray()
-		return Arrays.binarySearch(children, task.id) { a, b -> a.compareTo(b) }
-	}
+    fun findTaskNode(task: Task): Int {
+        val children = 0.until(childCount)
+            .map { getChildAt(it) }
+            .map { it.getTask() }
+            .map { it.id }
+            .toTypedArray()
+        return Arrays.binarySearch(children, task.id) { a, b -> a.compareTo(b) }
+    }
 
-	override fun getChildAt(index: Int): TaskTreeNode {
-		return super.getChildAt(index) as TaskTreeNode
-	}
+    override fun getChildAt(index: Int): TaskTreeNode {
+        return super.getChildAt(index) as TaskTreeNode
+    }
 
-	override fun getIcon(): Icon? {
-		return getSearch().getIcon()
-	}
+    override fun getIcon(): Icon? {
+        return getSearch().getIcon()
+    }
 
-	override fun setLabel(coloredTextContainer: ColoredTextContainer) {
-		coloredTextContainer.append(toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
-	}
+    override fun setLabel(coloredTextContainer: ColoredTextContainer) {
+        coloredTextContainer.append(toString(), SimpleTextAttributes.REGULAR_ATTRIBUTES)
+    }
 }
