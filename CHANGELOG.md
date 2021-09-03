@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- Depends on IC-211.7628.21
+
 ## [1.0.0]
 
 - Tool window colors are configurable in theme
