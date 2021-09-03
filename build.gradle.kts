@@ -127,6 +127,6 @@ tasks {
 }
 
 changelog {
-    version = properties(pluginVersion)
+    version = pluginVersion
     groups = emptyList()
 }
