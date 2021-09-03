@@ -2,7 +2,7 @@
 
 # Changelog
 
-## [1.0.0]
+## [Unreleased]
 
 - Tool window colors are configurable in theme
 - Fix issue with Gitlab
