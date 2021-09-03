@@ -2,9 +2,10 @@
 
 # Changelog
 
-## [Unreleased]
+## [1.0.0]
 
 - Tool window colors are configurable in theme
+- Move configuration to "Tools" page in IDE settings
 - Fix issue with Gitlab
 
 ## [0.1.18]
