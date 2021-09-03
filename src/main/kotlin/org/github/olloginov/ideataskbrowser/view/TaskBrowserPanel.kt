@@ -3,7 +3,6 @@ package org.github.olloginov.ideataskbrowser.view
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
@@ -203,7 +202,7 @@ class TaskBrowserPanel(
 
     private fun listenTreeDoubleClick(e: MouseEvent) {
         if (project != null) {
-            val taskBrowser = ServiceManager.getService(project, TaskBrowser::class.java) ?: return
+            val taskBrowser = project.getService(TaskBrowser::class.java) ?: return
             val config = taskBrowser.state ?: return
 
             when (config.doubleClickAction) {

@@ -11,7 +11,6 @@ import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ToggleAction
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction
 import com.intellij.openapi.actionSystem.impl.ActionButton
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.tasks.TaskState
 import org.github.olloginov.ideataskbrowser.TaskBrowser
@@ -20,6 +19,8 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserServiceState
 import org.github.olloginov.ideataskbrowser.view.TaskBrowserPanel
 import javax.swing.JComponent
 
+private val BUTTON_KEY = com.intellij.openapi.util.Key<JComponent?>("button")
+
 class SetIssueFilterAction(
     private val noop: Boolean
 ) : AnAction(TaskBrowserBundle.message("action.SetIssueFilterAction.description"), null, AllIcons.General.Filter),
@@ -27,7 +28,7 @@ class SetIssueFilterAction(
 
     override fun actionPerformed(e: AnActionEvent) {
         val presentation = e.presentation
-        val button = presentation.getClientProperty("button") as JComponent? ?: return
+        val button = presentation.getClientProperty(BUTTON_KEY) ?: return
 
         val group = createPopupActionGroup(e.project!!, noop)
         ActionManager.getInstance()
@@ -38,7 +39,7 @@ class SetIssueFilterAction(
 
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
         val button = ActionButton(this, presentation, TaskBrowserPanel.TOOL_WINDOW_ID, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
-        presentation.putClientProperty("button", button)
+        presentation.putClientProperty(BUTTON_KEY, button)
         return button
     }
 }
@@ -68,7 +69,7 @@ private class TaskFilterApplier(
 }
 
 private fun createPopupActionGroup(project: Project, noop: Boolean): DefaultActionGroup {
-    val taskBrowser = ServiceManager.getService(project, TaskBrowser::class.java)
+    val taskBrowser = project.getService(TaskBrowser::class.java)
     val group = DefaultActionGroup()
     group.add(TaskFilterApplier(TaskBrowserBundle.message("stateFilter.NA"), TaskBrowserBundle.message("stateFilter.NA.description"), null, taskBrowser, noop))
     group.addSeparator()

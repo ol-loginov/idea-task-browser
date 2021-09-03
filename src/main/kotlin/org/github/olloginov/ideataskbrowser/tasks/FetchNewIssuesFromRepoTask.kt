@@ -1,6 +1,5 @@
 package org.github.olloginov.ideataskbrowser.tasks
 
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -30,9 +29,9 @@ typealias BackgroundableSuper = com.intellij.openapi.progress.Task.Backgroundabl
 class FetchNewIssuesFromRepoTask(
     project: Project,
     private val searchNodeRef: TreeNodeRef<TaskSearchTreeNode>
-) : BackgroundableSuper(project, TaskBrowserBundle.message("FetchNewIssuesFromRepoTask.title", searchNodeRef.node.getSearch().getRepository()), true) {
+) : BackgroundableSuper(project, TaskBrowserBundle.message("fetchNewIssuesFromRepoTask.title", searchNodeRef.node.getSearch().getRepository()), true) {
 
-    private val notifier: TaskBrowserNotifier = ServiceManager.getService(TaskBrowserNotifier::class.java)
+    private val notifier: TaskBrowserNotifier = project.getService(TaskBrowserNotifier::class.java)
 
     private fun getNode(): TaskSearchTreeNode = searchNodeRef.node
     private fun getSearch(): TaskSearch = getNode().getSearch()
@@ -48,7 +47,7 @@ class FetchNewIssuesFromRepoTask(
     override fun run(indicator: ProgressIndicator) {
         val search = getSearch()
 
-        val manager = TaskManager.getManager(myProject)
+        val manager = TaskManager.getManager(project)
         val repository = manager.allRepositories.find { taskRepository -> search.getRepository() == taskRepository.presentableName }
 
         if (repository == null || indicator.isCanceled) {
@@ -70,7 +69,7 @@ class FetchNewIssuesFromRepoTask(
     }
 
     private fun importNew(ctx: FetchContext) {
-        val title = TaskBrowserBundle.message("task.FetchNewIssuesTask.title", ctx.repository.presentableName)
+        val title = TaskBrowserBundle.message("task.fetchNewIssuesTask.title", ctx.repository.presentableName)
         try {
             fetchAll(ctx)
             if (ctx.addedCount > 0 && ctx.updatedCount > 0) {
