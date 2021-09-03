@@ -3,6 +3,7 @@
 # Changelog
 
 ## [Unreleased]
+## [1.0.1]
 
 - Depends on IC-211.7628.21
 
