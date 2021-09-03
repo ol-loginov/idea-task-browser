@@ -9,28 +9,28 @@ import org.github.olloginov.ideataskbrowser.model.TaskSearchList
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel
 
 class UpdateRepositoriesTask(
-	project: Project,
-	private val list: TaskSearchList,
-	private val tree: TaskTreeModel
+    project: Project,
+    private val list: TaskSearchList,
+    private val tree: TaskTreeModel
 ) : com.intellij.openapi.progress.Task.Backgroundable(project, TaskBrowserBundle.message("UpdateRepositoriesTask.title"), true) {
 
-	override fun run(indicator: ProgressIndicator) {
-		val taskManager = TaskManager.getManager(myProject)
+    override fun run(indicator: ProgressIndicator) {
+        val taskManager = TaskManager.getManager(myProject)
 
-		taskManager.allRepositories.forEach { r ->
-			var search = list.findSearchByRepository(r.presentableName)
-			if (search == null) {
-				indicator.text = TaskBrowserBundle.message("UpdateRepositoriesTask.updateRepository", r.presentableName)
-				search = TaskSearch()
-				search.setQuery("")
-				search.setRepository(r.presentableName)
-				list.add(search)
-			}
-		}
+        taskManager.allRepositories.forEach { r ->
+            var search = list.findSearchByRepository(r.presentableName)
+            if (search == null) {
+                indicator.text = TaskBrowserBundle.message("UpdateRepositoriesTask.updateRepository", r.presentableName)
+                search = TaskSearch()
+                search.setQuery("")
+                search.setRepository(r.presentableName)
+                list.add(search)
+            }
+        }
 
-		indicator.text = TaskBrowserBundle.message("UpdateRepositoriesTask.title")
-		list.updateIcons(taskManager)
+        indicator.text = TaskBrowserBundle.message("UpdateRepositoriesTask.title")
+        list.updateIcons(taskManager)
 
-		FetchNewIssuesTask(project, tree).run(indicator)
-	}
+        FetchNewIssuesTask(project, tree).run(indicator)
+    }
 }

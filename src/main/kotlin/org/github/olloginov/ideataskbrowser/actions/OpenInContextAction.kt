@@ -8,17 +8,17 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow
 private const val ID = "OpenInContext"
 
 class OpenInContextAction(
-	private val toolWindow: TaskBrowserToolWindow,
-	noop: Boolean
+    private val toolWindow: TaskBrowserToolWindow,
+    noop: Boolean
 ) : AnActionImpl(ID, noop) {
 
-	override fun isEnabled(project: Project): Boolean {
-		return toolWindow.getSelectedTask() != null
-	}
+    override fun isEnabled(project: Project): Boolean {
+        return toolWindow.getSelectedTask() != null
+    }
 
-	override fun actionPerformedNow(e: AnActionEvent) {
-		val project = e.project ?: return
-		val task = toolWindow.getSelectedTask() ?: return
-		OpenTaskDialog(project, task).show()
-	}
+    override fun actionPerformedNow(e: AnActionEvent) {
+        val project = e.project ?: return
+        val task = toolWindow.getSelectedTask() ?: return
+        OpenTaskDialog(project, task).show()
+    }
 }

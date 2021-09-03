@@ -6,16 +6,16 @@ import com.intellij.openapi.project.Project
 import org.github.olloginov.ideataskbrowser.TaskBrowser
 
 class RefreshListAction(
-	noop: Boolean
+    noop: Boolean
 ) : AnActionImpl("RefreshList", noop) {
-	override fun isEnabled(project: Project): Boolean {
-		return true
-	}
+    override fun isEnabled(project: Project): Boolean {
+        return true
+    }
 
-	override fun actionPerformedNow(e: AnActionEvent) {
-		val project = e.project ?: return
-		ServiceManager
-			.getService(project, TaskBrowser::class.java)
-			?.refresh()
-	}
+    override fun actionPerformedNow(e: AnActionEvent) {
+        val project = e.project ?: return
+        ServiceManager
+            .getService(project, TaskBrowser::class.java)
+            ?.refresh()
+    }
 }

@@ -22,63 +22,63 @@ import kotlin.random.Random
 
 private val RANDOM = Random(System.currentTimeMillis())
 private fun randomTaskType(): TaskType {
-	val enumValues = TaskType.values()
-	return enumValues[RANDOM.nextInt(enumValues.size)]
+    val enumValues = TaskType.values()
+    return enumValues[RANDOM.nextInt(enumValues.size)]
 }
 
 private const val PREVIEW_PANEL_PADDING = 10
 
 class TaskBrowserColorsPreviewPanel : PreviewPanel {
-	private var container: JPanel? = null
-	private var panel: TaskBrowserPanel? = null
+    private var container: JPanel? = null
+    private var panel: TaskBrowserPanel? = null
 
-	override fun getPanel(): Component {
-		val panel = this.panel ?: TaskBrowserPanel(null).also {
-			it.root.border = BorderFactory.createEmptyBorder(PREVIEW_PANEL_PADDING, 0, PREVIEW_PANEL_PADDING, PREVIEW_PANEL_PADDING)
+    override fun getPanel(): Component {
+        val panel = this.panel ?: TaskBrowserPanel(null).also {
+            it.root.border = BorderFactory.createEmptyBorder(PREVIEW_PANEL_PADDING, 0, PREVIEW_PANEL_PADDING, PREVIEW_PANEL_PADDING)
 
-			val repositories = TaskSearchList()
-			TaskRepositoryType.getRepositoryTypes()
-				.map { repositoryType -> repositoryType to TaskSearch() }
-				.onEach { pair -> pair.second.setRepository(pair.first.name) }
-				.onEach { pair -> pair.second.setIcon(pair.first.icon) }
-				.map { pair -> pair.second }
-				.forEach { repository -> repositories.add(repository) }
+            val repositories = TaskSearchList()
+            TaskRepositoryType.getRepositoryTypes()
+                .map { repositoryType -> repositoryType to TaskSearch() }
+                .onEach { pair -> pair.second.setRepository(pair.first.name) }
+                .onEach { pair -> pair.second.setIcon(pair.first.icon) }
+                .map { pair -> pair.second }
+                .forEach { repository -> repositories.add(repository) }
 
-			val treeModel = TaskTreeModel(repositories)
-			for (child in treeModel.root.children()) {
-				val repoNode = child as TaskSearchTreeNode
+            val treeModel = TaskTreeModel(repositories)
+            for (child in treeModel.root.children()) {
+                val repoNode = child as TaskSearchTreeNode
 
-				val task = LocalTaskImpl("", "${repoNode.getSearch().getRepository()} Issue")
-				task.type = randomTaskType()
-				treeModel.insertNodeInto(TaskTreeNode(task), child as MutableTreeNode, 0)
-			}
-			it.setTreeModel(treeModel)
+                val task = LocalTaskImpl("", "${repoNode.getSearch().getRepository()} Issue")
+                task.type = randomTaskType()
+                treeModel.insertNodeInto(TaskTreeNode(task), child as MutableTreeNode, 0)
+            }
+            it.setTreeModel(treeModel)
 
-			this.panel = it
-		}
-		return this.container ?: JPanel(BorderLayout(0, 0)).also {
-			it.border = BorderFactory.createTitledBorder(TaskBrowserBundle.message("options.colors.preview"))
-			it.add(panel.root, BorderLayout.CENTER)
+            this.panel = it
+        }
+        return this.container ?: JPanel(BorderLayout(0, 0)).also {
+            it.border = BorderFactory.createTitledBorder(TaskBrowserBundle.message("options.colors.preview"))
+            it.add(panel.root, BorderLayout.CENTER)
 
-			this.container = it
-		}
-	}
+            this.container = it
+        }
+    }
 
-	override fun disposeUIResources() {
-		container = null
-		panel = null
-	}
+    override fun disposeUIResources() {
+        container = null
+        panel = null
+    }
 
-	override fun updateView() = Unit
+    override fun updateView() = Unit
 
-	fun setColorScheme(scheme: EditorColorsScheme?) {
-		val panel = this.panel ?: return
-		if (scheme != null) {
-			panel.setColorScheme(scheme)
-		}
-	}
+    fun setColorScheme(scheme: EditorColorsScheme?) {
+        val panel = this.panel ?: return
+        if (scheme != null) {
+            panel.setColorScheme(scheme)
+        }
+    }
 
-	override fun blinkSelectedHighlightType(selected: Any?) = Unit
+    override fun blinkSelectedHighlightType(selected: Any?) = Unit
 
-	override fun addListener(listener: ColorAndFontSettingsListener) = Unit
+    override fun addListener(listener: ColorAndFontSettingsListener) = Unit
 }

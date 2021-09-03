@@ -8,23 +8,23 @@ import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow
 private const val ID: String = "OpenInBrowser"
 
 class OpenInBrowserAction(
-	private val toolWindow: TaskBrowserToolWindow,
-	noop: Boolean
+    private val toolWindow: TaskBrowserToolWindow,
+    noop: Boolean
 ) : AnActionImpl(ID, noop) {
-	override fun isEnabled(project: Project): Boolean {
-		return getIssueUrl() != null
-	}
+    override fun isEnabled(project: Project): Boolean {
+        return getIssueUrl() != null
+    }
 
-	override fun actionPerformedNow(e: AnActionEvent) {
-		val taskUrl = getIssueUrl()
-		if (taskUrl != null) {
-			BrowserUtil.browse(taskUrl)
-		}
-	}
+    override fun actionPerformedNow(e: AnActionEvent) {
+        val taskUrl = getIssueUrl()
+        if (taskUrl != null) {
+            BrowserUtil.browse(taskUrl)
+        }
+    }
 
-	private fun getIssueUrl(): String? {
-		return toolWindow.getSelectedTask()
-			?.issueUrl
-			?.takeIf { it.isNotEmpty() }
-	}
+    private fun getIssueUrl(): String? {
+        return toolWindow.getSelectedTask()
+            ?.issueUrl
+            ?.takeIf { it.isNotEmpty() }
+    }
 }
