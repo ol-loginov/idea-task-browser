@@ -3,6 +3,7 @@
 # Changelog
 
 ## [Unreleased]
+## [null]
 
 - Tool window colors are configurable in theme
 - Move configuration to "Tools" page in IDE settings
