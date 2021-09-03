@@ -3,6 +3,8 @@ import org.jetbrains.changelog.date
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+fun properties(key: String) = project.findProperty(key).toString()
+
 plugins {
     // Java support
     id("java")
@@ -21,18 +23,12 @@ plugins {
 logging.captureStandardOutput(LogLevel.INFO)
 
 // Import variables from gradle.properties file
-val pluginGroup: String by project
-// `pluginName_` variable ends with `_` because of the collision with Kotlin magic getter in the `intellij` closure.
-// Read more about the issue: https://github.com/JetBrains/intellij-platform-plugin-template/issues/29
-val pluginName_: String by project
 val pluginVersion: String by project
-
-val platformType: String by project
 val platformVersion: String by project
 val platformPlugins: String by project
 val platformDownloadSources: String by project
 
-group = pluginGroup
+group = properties("pluginGroup")
 version = pluginVersion
 
 // Configure project's dependencies
@@ -47,12 +43,12 @@ dependencies {
 // Configure gradle-intellij-plugin plugin.
 // Read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    type.set(platformType)
+    type.set(properties("platformType"))
     version.set(platformVersion)
 
     println(">>> intellij version = ${type.get()} ${getVersionNumber()}")
 
-    pluginName.set(pluginName_)
+    pluginName.set(properties("pluginName"))
     downloadSources.set(platformDownloadSources.toBoolean())
     updateSinceUntilBuild.set(false)
 

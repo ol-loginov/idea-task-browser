@@ -7,7 +7,7 @@ import com.intellij.openapi.util.IconLoader
 import org.github.olloginov.ideataskbrowser.TaskBrowserBundle
 import javax.swing.Icon
 
-private fun resolveIcon(key: String): Icon = IconLoader.getIcon("/icons/action.$key.png")
+private fun resolveIcon(key: String): Icon = IconLoader.getIcon("/icons/action.$key.png", AnActionImpl::class.java)
 private fun resolveDescription(key: String): String = TaskBrowserBundle.message("action.$key.description")
 private fun resolveText(key: String): String = TaskBrowserBundle.message("action.$key.text")
 
@@ -21,9 +21,7 @@ abstract class AnActionImpl(
         e.presentation.isEnabled = project != null && isEnabled(project)
     }
 
-    protected open fun isEnabled(project: Project): Boolean {
-        return false
-    }
+    protected open fun isEnabled(project: Project): Boolean = false
 
     final override fun actionPerformed(e: AnActionEvent) {
         if (noop) {
