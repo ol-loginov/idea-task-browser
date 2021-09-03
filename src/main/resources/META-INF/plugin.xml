@@ -3,7 +3,6 @@
     <name>Wide Task Browser</name>
     <vendor>ol-loginov</vendor>
 
-    <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.tasks</depends>
 
     <resource-bundle>messages.TaskBrowserBundle</resource-bundle>

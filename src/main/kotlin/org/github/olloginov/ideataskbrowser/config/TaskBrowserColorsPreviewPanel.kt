@@ -2,6 +2,7 @@ package org.github.olloginov.ideataskbrowser.config
 
 import com.intellij.application.options.colors.ColorAndFontSettingsListener
 import com.intellij.application.options.colors.PreviewPanel
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.tasks.TaskRepositoryType
 import com.intellij.tasks.TaskType
@@ -14,8 +15,8 @@ import org.github.olloginov.ideataskbrowser.view.TaskSearchTreeNode
 import org.github.olloginov.ideataskbrowser.view.TaskTreeModel
 import org.github.olloginov.ideataskbrowser.view.TaskTreeNode
 import java.awt.BorderLayout
-import java.awt.Component
 import javax.swing.BorderFactory
+import javax.swing.JComponent
 import javax.swing.JPanel
 import javax.swing.tree.MutableTreeNode
 import kotlin.random.Random
@@ -28,11 +29,11 @@ private fun randomTaskType(): TaskType {
 
 private const val PREVIEW_PANEL_PADDING = 10
 
-class TaskBrowserColorsPreviewPanel : PreviewPanel {
+class TaskBrowserColorsPreviewPanel : PreviewPanel, Disposable {
     private var container: JPanel? = null
     private var panel: TaskBrowserPanel? = null
 
-    override fun getPanel(): Component {
+    override fun getPanel(): JComponent {
         val panel = this.panel ?: TaskBrowserPanel(null).also {
             it.root.border = BorderFactory.createEmptyBorder(PREVIEW_PANEL_PADDING, 0, PREVIEW_PANEL_PADDING, PREVIEW_PANEL_PADDING)
 
@@ -56,12 +57,17 @@ class TaskBrowserColorsPreviewPanel : PreviewPanel {
 
             this.panel = it
         }
+
         return this.container ?: JPanel(BorderLayout(0, 0)).also {
             it.border = BorderFactory.createTitledBorder(TaskBrowserBundle.message("options.colors.preview"))
             it.add(panel.root, BorderLayout.CENTER)
 
             this.container = it
         }
+    }
+
+    override fun dispose() {
+        disposeUIResources()
     }
 
     override fun disposeUIResources() {
