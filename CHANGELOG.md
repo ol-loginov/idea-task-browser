@@ -3,7 +3,14 @@
 # Changelog
 
 ## [Unreleased]
+
+- Show description for GitLab task
+- Minor fixes
+
 ## [1.0.2]
+
+- Depends on IC-212.5080.55
+
 ## [1.0.1]
 
 - Depends on IC-211.7628.21

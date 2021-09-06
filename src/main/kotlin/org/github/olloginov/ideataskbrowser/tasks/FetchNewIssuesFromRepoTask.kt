@@ -1,5 +1,6 @@
 package org.github.olloginov.ideataskbrowser.tasks
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -31,7 +32,7 @@ class FetchNewIssuesFromRepoTask(
     private val searchNodeRef: TreeNodeRef<TaskSearchTreeNode>
 ) : BackgroundableSuper(project, TaskBrowserBundle.message("fetchNewIssuesFromRepoTask.title", searchNodeRef.node.getSearch().getRepository()), true) {
 
-    private val notifier: TaskBrowserNotifier = project.getService(TaskBrowserNotifier::class.java)
+    private val notifier: TaskBrowserNotifier = ApplicationManager.getApplication().getService(TaskBrowserNotifier::class.java)
 
     private fun getNode(): TaskSearchTreeNode = searchNodeRef.node
     private fun getSearch(): TaskSearch = getNode().getSearch()

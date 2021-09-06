@@ -10,10 +10,14 @@ import com.intellij.openapi.editor.colors.EditorColorsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.tasks.Task
+import com.intellij.tasks.gitlab.GitlabTask
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.treeStructure.Tree
+import com.intellij.util.text.DateFormatUtil
+import com.intellij.util.ui.JBHtmlEditorKit
 import com.intellij.util.ui.UIUtil
+import com.petebevin.markdown.MarkdownProcessor
 import org.github.olloginov.ideataskbrowser.TaskBrowser
 import org.github.olloginov.ideataskbrowser.TaskBrowserToolWindow
 import org.github.olloginov.ideataskbrowser.actions.OpenInBrowserAction
@@ -26,22 +30,15 @@ import org.github.olloginov.ideataskbrowser.util.TaskHelper
 import java.awt.BorderLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.text.DateFormat
 import javax.swing.BorderFactory
 import javax.swing.JEditorPane
 import javax.swing.JPanel
-import javax.swing.text.html.HTMLEditorKit
 import javax.swing.tree.TreeModel
 import javax.swing.tree.TreeNode
 import javax.swing.tree.TreeSelectionModel
 
 const val PREVIEW_PADDING = 10
 const val PREVIEW_SPLIT = .5f
-
-private fun htmlBreak(text: String?): String {
-    if (text == null) return ""
-    return text.replace("(\\r\\n|\\r|\\n)", "<br>")
-}
 
 private fun htmlSafe(text: String?): String {
     if (text == null) return ""
@@ -67,7 +64,7 @@ class TaskBrowserPanel(
     init {
         initComponent()
 
-        taskHtml.editorKit = HTMLEditorKit()
+        taskHtml.editorKit = JBHtmlEditorKit()
         taskHtml.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true)
         setPreviewHtml("")
 
@@ -142,6 +139,7 @@ class TaskBrowserPanel(
 
         val actionManager = ActionManager.getInstance()
         val toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false)
+        toolbar.setTargetComponent(this.tree)
         root.add(toolbar.component, BorderLayout.WEST)
     }
 
@@ -171,24 +169,28 @@ class TaskBrowserPanel(
     private fun listenTreeSingleClick() {
         val task = getSelectedTask() ?: return
 
-        val df = DateFormat.getDateTimeInstance()
-
         val html = StringBuilder(
             """
-			<html><body style='padding: 5px;'>
-			<small>${if (TaskHelper.getChangeDate(task) != null) df.format(TaskHelper.getChangeDate(task)) else ""}</small><br>
-			<b>${htmlSafe(task.presentableName)}</b><br><br>
-			<p>${htmlBreak(task.description ?: "")}</p><br><br><br>
+<html>
+    <head><base href="${task.issueUrl}"></head>
+    <body style='padding: 5px;'>
+        <small>${if (TaskHelper.getChangeDate(task) != null) DateFormatUtil.formatDateTime(TaskHelper.getChangeDate(task)) else ""}</small><br>
+        <b>${htmlSafe(TaskHelper.getPresentationTitle(task))}</b><br><br>
 		"""
         )
 
+        var description = task.description
+        if (description == null && task is GitlabTask) {
+            description = TaskHelper.getGitlabDescription(task)
+        }
+
+        if (description != null) {
+            html.append(MarkdownProcessor().markdown(description))
+        }
+
         task.comments.forEach { comment ->
-            html.append(
-                """
-				<b>${df.format(comment.date)}</b><small>${htmlSafe(comment.author)}</small><br>
-				 	${comment.text}<br>
-			"""
-            )
+            html.append("<br><br>")
+            comment.appendTo(html)
         }
 
         html.append("</body></html>")
