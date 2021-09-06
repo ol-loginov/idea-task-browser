@@ -12,6 +12,15 @@ formatting:
 exceptions:
   TooGenericExceptionCaught:
     active: false
+  SwallowedException:
+    ignoredExceptionTypes:
+      - 'InterruptedException'
+      - 'MalformedURLException'
+      - 'NumberFormatException'
+      - 'ParseException'
+      - 'NoSuchFieldException'
+      - 'InaccessibleObjectException'
+      - 'SecurityException'
 
 complexity:
   TooManyFunctions:
