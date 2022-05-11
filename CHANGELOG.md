@@ -3,6 +3,10 @@
 # Changelog
 
 ## [Unreleased]
+## [1.0.4]
+
+- Remove deprecated API
+
 ## [1.0.3]
 
 - Show description for GitLab task

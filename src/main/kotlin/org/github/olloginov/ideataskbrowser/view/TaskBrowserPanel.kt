@@ -15,6 +15,7 @@ import com.intellij.ui.JBSplitter
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.text.DateFormatUtil
+import com.intellij.util.ui.HTMLEditorKitBuilder
 import com.intellij.util.ui.JBHtmlEditorKit
 import com.intellij.util.ui.UIUtil
 import com.petebevin.markdown.MarkdownProcessor
@@ -64,7 +65,7 @@ class TaskBrowserPanel(
     init {
         initComponent()
 
-        taskHtml.editorKit = JBHtmlEditorKit()
+        taskHtml.editorKit = HTMLEditorKitBuilder().build()
         taskHtml.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true)
         setPreviewHtml("")
 
