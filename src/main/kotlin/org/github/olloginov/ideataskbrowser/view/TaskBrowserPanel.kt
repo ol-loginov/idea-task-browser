@@ -16,7 +16,6 @@ import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.treeStructure.Tree
 import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.HTMLEditorKitBuilder
-import com.intellij.util.ui.JBHtmlEditorKit
 import com.intellij.util.ui.UIUtil
 import com.petebevin.markdown.MarkdownProcessor
 import org.github.olloginov.ideataskbrowser.TaskBrowser
@@ -140,7 +139,7 @@ class TaskBrowserPanel(
 
         val actionManager = ActionManager.getInstance()
         val toolbar = actionManager.createActionToolbar(TOOL_WINDOW_ID, toolbarGroup, false)
-        toolbar.setTargetComponent(this.tree)
+        toolbar.targetComponent = this.tree
         root.add(toolbar.component, BorderLayout.WEST)
     }
 
