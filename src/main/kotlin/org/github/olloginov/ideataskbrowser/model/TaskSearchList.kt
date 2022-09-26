@@ -70,9 +70,7 @@ class TaskSearchList : ListModel<TaskSearch> {
     }
 
     fun updateIcons(taskManager: TaskManager) {
-        val repositoryMap = taskManager.allRepositories
-            .map { r -> r.presentableName to r }
-            .toMap()
+        val repositoryMap = taskManager.allRepositories.associateBy { r -> r.presentableName }
 
         updateAll { o ->
             val repository = repositoryMap[o.getRepository()]

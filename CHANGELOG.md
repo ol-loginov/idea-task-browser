@@ -3,6 +3,10 @@
 # Changelog
 
 ## [Unreleased]
+## [1.0.5]
+
+- Depends on IC-221.6008.13
+
 ## [1.0.4]
 
 - Remove deprecated API

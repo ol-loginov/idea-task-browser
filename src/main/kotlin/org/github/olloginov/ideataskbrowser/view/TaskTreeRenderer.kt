@@ -6,7 +6,7 @@ import javax.swing.JTree
 class TaskTreeRenderer : ColoredTreeCellRenderer() {
     override fun customizeCellRenderer(tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean) {
         if (value is CustomIcon) {
-            setIcon(value.getIcon())
+            icon = value.getIcon()
         }
         if (value is CustomLabel) {
             value.setLabel(this)
