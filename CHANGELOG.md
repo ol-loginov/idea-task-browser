@@ -8,7 +8,6 @@
 - Depends on IC-221.6008.13
 
 ## [1.0.4]
-## [1.0.4]
 
 - Remove deprecated API
 
